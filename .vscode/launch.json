@@ -1,29 +1,30 @@
 {
-  // 使用 IntelliSense 了解相关属性。
-  // 悬停以查看现有属性的描述。
-  // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "esno",
+      "name": "Electron: Main",
       "type": "node",
       "request": "launch",
-      "args": ["./node_modules/esno/esno.js", "${file}"],
-      "console": "integratedTerminal"
+      "protocol": "inspector",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start"],
+      "env": {
+        "MAIN_ARGS": "--inspect=5858 --remote-debugging-port=9223"
+      }
     },
     {
-      "type": "node",
-      "request": "launch",
-      "name": "启动程序",
-      "skipFiles": ["<node_internals>/**"],
-      "runtimeExecutable": "node",
-      "program": "${file}"
-    },
+      "name": "Electron: Renderer",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9223,
+      "webRoot": "${workspaceFolder}",
+      "timeout": 15000
+    }
+  ],
+  "compounds": [
     {
-      "type": "msedge",
-      "name": " http://localhost:5173/",
-      "request": "launch",
-      "url": " http://localhost:5173/"
+      "name": "Electron: All",
+      "configurations": ["Electron: Main", "Electron: Renderer"]
     }
   ]
 }
