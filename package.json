@@ -1,0 +1,19 @@
+{
+  "name": "feishu-message-move",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "run": "esno main.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@larksuiteoapi/node-sdk": "^1.38.0",
+    "esno": "^4.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}
