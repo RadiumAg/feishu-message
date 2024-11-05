@@ -2,81 +2,16 @@ import React from 'react';
 import { Button, Table } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import Styles from './index.module.scss';
+import useAddDialog from './hooks/add-dialog';
 
 type FSMessageProps = {};
 
 const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
   const [wrapperRef, setWrapperRef] = React.useState<HTMLDivElement | null>();
   const [scrollHeight, setScrollHeight] = React.useState('0px');
+  const [element, toggleDialog] = useAddDialog();
 
-  const data = [
-    {
-      chatName: '测试1',
-      chatId: '123',
-      appId: '123',
-      appSecret: '123',
-    },
-    {
-      chatName: '测试1',
-      chatId: '123',
-      appId: '123',
-      appSecret: '123',
-    },
-    {
-      chatName: '测试1',
-      chatId: '123',
-      appId: '123',
-      appSecret: '123',
-    },
-    {
-      chatName: '测试1',
-      chatId: '123',
-      appId: '123',
-      appSecret: '123',
-    },
-    {
-      chatName: '测试1',
-      chatId: '123',
-      appId: '123',
-      appSecret: '123',
-    },
-    {
-      chatName: '测试1',
-      chatId: '123',
-      appId: '123',
-      appSecret: '123',
-    },
-    {
-      chatName: '测试1',
-      chatId: '123',
-      appId: '123',
-      appSecret: '123',
-    },
-    {
-      chatName: '测试1',
-      chatId: '123',
-      appId: '123',
-      appSecret: '123',
-    },
-    {
-      chatName: '测试1',
-      chatId: '123',
-      appId: '123',
-      appSecret: '123',
-    },
-    {
-      chatName: '测试1',
-      chatId: '123',
-      appId: '123',
-      appSecret: '123',
-    },
-    {
-      chatName: '测试1',
-      chatId: '123',
-      appId: '123',
-      appSecret: '123',
-    },
-  ];
+  const data = [];
 
   React.useEffect(() => {
     if (wrapperRef == null) return;
@@ -97,7 +32,7 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
   return (
     <div className={Styles.wrapper}>
       <div className={Styles.operateArea}>
-        <Button icon={<SettingOutlined />} type="text" />
+        <Button icon={<SettingOutlined />} type="text" onClick={toggleDialog} />
       </div>
 
       <div className={Styles.tableWrapper} ref={setWrapperRef}>
@@ -142,6 +77,7 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
           </Table>
         </div>
       </div>
+      {element}
     </div>
   );
 };
