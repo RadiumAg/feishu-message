@@ -9,7 +9,11 @@ type FSMessageProps = {};
 const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
   const [wrapperRef, setWrapperRef] = React.useState<HTMLDivElement | null>();
   const [scrollHeight, setScrollHeight] = React.useState('0px');
-  const [element, toggleDialog] = useAddDialog();
+  const [element, toggleDialog] = useAddDialog({
+    afterClose(form) {
+      console.log(form);
+    },
+  });
 
   const data = [];
 

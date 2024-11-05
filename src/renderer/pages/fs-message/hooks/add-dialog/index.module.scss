@@ -5,5 +5,22 @@
     display: flex;
     justify-content: center;
     align-content: center;
+    margin-bottom: 16px;
+  }
+
+  .sendConfigCard {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+
+  .cardTitle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .chatId {
+    display: flex;
+    column-gap: 8px;
   }
 }
