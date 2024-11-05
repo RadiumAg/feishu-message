@@ -101,6 +101,7 @@
     }
   },
   "dependencies": {
+    "@ant-design/icons": "^5.5.1",
     "@electron/notarize": "^2.3.2",
     "@larksuiteoapi/node-sdk": "^1.38.0",
     "antd": "^5.21.6",

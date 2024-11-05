@@ -1,0 +1,28 @@
+.wrapper {
+  display: flex;
+  height: 100vh;
+  padding: 16px;
+  flex-direction: column;
+
+  .leftTable {
+    cursor: pointer;
+    width: 300px;
+    flex-shrink: 0;
+  }
+
+  .rightTable {
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  .operateArea {
+    width: 100%;
+  }
+
+  .tableWrapper {
+    display: flex;
+    overflow: hidden;
+    column-gap: 16px;
+    flex-grow: 1;
+  }
+}

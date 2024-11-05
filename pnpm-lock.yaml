@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@ant-design/icons':
+    specifier: ^5.5.1
+    version: 5.5.1(react-dom@18.3.1)(react@18.3.1)
   '@electron/notarize':
     specifier: ^2.3.2
     version: 2.5.0

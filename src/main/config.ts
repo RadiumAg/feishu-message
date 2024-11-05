@@ -31,3 +31,4 @@ const setConfig = (globalConfigValue: Partial<GlobalConfig>) => {
 };
 
 export { setConfig, globalConfig };
+export type { GlobalConfig };
