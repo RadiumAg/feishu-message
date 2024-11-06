@@ -1,6 +1,6 @@
 import React from 'react';
 import { DeleteFilled, LinkOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Modal } from 'antd';
+import { Button, Card, Form, Input, Modal, Spin } from 'antd';
 import { useMount } from 'ahooks';
 import Styles from './index.module.scss';
 
@@ -23,6 +23,7 @@ type Config = {
 const useAddDialog = (config: Config) => {
   const [form] = Form.useForm();
   const { afterClose } = config;
+  const [isLoading, setIsLoading] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const handleOk = async () => {
@@ -38,6 +39,7 @@ const useAddDialog = (config: Config) => {
   };
 
   const handleGetChatId = (sendValue: FormValue['sendConfig'][number]) => {
+    setIsLoading(true);
     window.electron.ipcRenderer.sendMessage(
       'get-chat-id',
       sendValue.appId,
@@ -47,6 +49,8 @@ const useAddDialog = (config: Config) => {
 
   useMount(() => {
     window.electron.ipcRenderer.on('get-chat-id', (chatId: string) => {
+      setIsLoading(false);
+
       form.setFieldValue('chatId', chatId);
     });
   });
@@ -77,7 +81,7 @@ const useAddDialog = (config: Config) => {
 
           <Form.Item name="chatId" rules={[{ required: true }]} label="chatId">
             <div className={Styles.chatId}>
-              <Input disabled />
+              <Input />
               <Button
                 type="primary"
                 onClick={() => {
@@ -138,7 +142,7 @@ const useAddDialog = (config: Config) => {
                           label="chatId"
                         >
                           <div className={Styles.chatId}>
-                            <Input disabled />
+                            <Input />
                             <Button
                               type="primary"
                               onClick={() => {
@@ -164,6 +168,7 @@ const useAddDialog = (config: Config) => {
           </Form.List>
         </Form>
       </div>
+      <Spin fullscreen spinning={isLoading} />
     </Modal>
   );
 
