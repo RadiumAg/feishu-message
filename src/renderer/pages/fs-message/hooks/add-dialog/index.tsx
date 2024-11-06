@@ -103,6 +103,7 @@ const useAddDialog = (config: Config) => {
 
           <Form.Item name="chatId" rules={[{ required: true }]} label="chatId">
             <Input
+              disabled
               suffix={
                 <Button
                   type="primary"
@@ -169,6 +170,7 @@ const useAddDialog = (config: Config) => {
                           label="chatId"
                         >
                           <Input
+                            disabled
                             suffix={
                               <Button
                                 type="primary"
