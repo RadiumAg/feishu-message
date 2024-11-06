@@ -37,7 +37,7 @@ const useAddDialog = (config: Config) => {
   };
 
   const handleGetChatId = (
-    sendValue: FormValue['sendConfig'][number],
+    sendValue: FormValue['sendConfigArray'][number],
     name: [number, string] | undefined,
     isSendConfig = false,
   ) => {

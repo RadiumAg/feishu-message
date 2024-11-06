@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Table } from 'antd';
+import { Button, Card, Table } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { useMount } from 'ahooks';
 import Styles from './index.module.scss';
@@ -11,6 +11,7 @@ type FSMessageProps = {};
 const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
   const [wrapperRef, setWrapperRef] = React.useState<HTMLDivElement | null>();
   const [scrollHeight, setScrollHeight] = React.useState('0px');
+  const [selectionKeys, setSelectKeys] = React.useState<string[]>([]);
   const [leftTableData, setLeftTableData] = React.useState<FormValue[]>([]);
   const [rightTableData, setRightTableData] = React.useState<
     FormValue['sendConfigArray']
@@ -62,11 +63,20 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
       </div>
 
       <div className={Styles.tableWrapper} ref={setWrapperRef}>
-        <div className={Styles.leftTable}>
+        <Card className={Styles.leftTable} title="监听群配置">
           <Table
             rowKey={(record) => record.appId}
-            rowSelection={{ onSelect: handleChange, type: 'radio' }}
+            rowSelection={{
+              type: 'radio',
+              selectedRowKeys: selectionKeys,
+            }}
             size="small"
+            onRow={(record) => ({
+              onClick: () => {
+                handleChange(record);
+                setSelectKeys([record.appId]);
+              },
+            })}
             scroll={{ y: scrollHeight }}
             bordered
             sticky
@@ -80,9 +90,9 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
               key="chatName"
             />
           </Table>
-        </div>
+        </Card>
 
-        <div className={Styles.rightTable}>
+        <Card className={Styles.rightTable} title="发送群配置">
           <Table
             dataSource={rightTableData}
             rowKey={(record) => record.appId}
@@ -104,9 +114,9 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
               key="appSecret"
             />
           </Table>
-        </div>
+        </Card>
+        {element}
       </div>
-      {element}
     </div>
   );
 };

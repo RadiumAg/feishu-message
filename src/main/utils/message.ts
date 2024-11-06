@@ -29,7 +29,7 @@ const createWsClient = () => {
               appSecret: sendConfig.appSecret,
             });
 
-            if (sendConfig.receiveId == null) return;
+            if (sendConfig.receiveId == null) return null;
 
             sendClient?.im.message.create({
               data: {
