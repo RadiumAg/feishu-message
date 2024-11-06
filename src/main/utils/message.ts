@@ -23,20 +23,20 @@ const createWsClient = () => {
             message: { content, message_type },
           } = data;
 
-          clientArray.config.linkSendConfigArray.forEach((sendConfig) => {
+          wsClient.config.linkSendConfigArray.forEach((sendConfig) => {
             const sendClient = new Lark.Client({
               appId: sendConfig.appId,
               appSecret: sendConfig.appSecret,
             });
 
-            if (sendClient.config.receiveId == null) return;
+            if (sendConfig.receiveId == null) return;
 
             sendClient?.im.message.create({
               data: {
                 content,
                 // eslint-disable-next-line camelcase
                 msg_type: message_type,
-                receive_id: sendClient.config.receiveId,
+                receive_id: sendConfig.receiveId,
               },
               params: {
                 receive_id_type: 'chat_id',

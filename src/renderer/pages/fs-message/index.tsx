@@ -65,7 +65,7 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
         <div className={Styles.leftTable}>
           <Table
             rowKey={(record) => record.appId}
-            rowSelection={{ onSelect: handleChange }}
+            rowSelection={{ onSelect: handleChange, type: 'radio' }}
             size="small"
             scroll={{ y: scrollHeight }}
             bordered

@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 import * as Lark from '@larksuiteoapi/node-sdk';
 import { setConfig } from './config';
 import { FormValue } from '../utils/type';
+import { createWsClient } from './utils/message';
 
 ipcMain.on('set-config', (event, globalConfig: string) => {
   const config = JSON.parse(globalConfig) as FormValue[];
@@ -46,7 +47,7 @@ ipcMain.on('set-config', (event, globalConfig: string) => {
       };
     },
   );
-
+  createWsClient();
   event.reply('update-data', JSON.stringify(updateData));
 });
 

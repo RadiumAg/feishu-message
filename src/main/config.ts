@@ -1,23 +1,8 @@
 import * as Lark from '@larksuiteoapi/node-sdk';
 
-type SendChatGroupConfig = {
-  appId: string;
-  chatId: string;
-  chatName: string;
-  appSecret: string;
-  receiveId?: string;
-};
-
-type ListenChatGroupConfig = {
-  appId: string;
-  chatId: string;
-  chatName: string;
-  appSecret: string;
-  linkSendConfigArray: SendChatGroupConfig[];
-};
-
 type GlobalConfig = {
   listenChatGroupClientArray: Lark.WSClient[];
+  // eslint-disable-next-line no-undef
   listenChatGroupConfigArray: ListenChatGroupConfig[];
 };
 
