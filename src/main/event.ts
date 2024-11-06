@@ -1,9 +1,53 @@
 import { ipcMain } from 'electron';
 import * as Lark from '@larksuiteoapi/node-sdk';
-import { GlobalConfig, setConfig } from './config';
+import { setConfig } from './config';
+import { FormValue } from '../utils/type';
 
-ipcMain.on('set-config', (_, globalConfig: GlobalConfig) => {
-  setConfig(globalConfig);
+ipcMain.on('set-config', (event, globalConfig: string) => {
+  const config = JSON.parse(globalConfig) as FormValue[];
+
+  const listenChatGroupConfigArray = config.map((configValue) => {
+    return {
+      appId: configValue.appId,
+      chatId: configValue.chatId,
+      chatName: configValue.chatName,
+      appSecret: configValue.appSecret,
+      linkSendConfigArray: configValue.sendConfigArray?.map((sendConfig) => {
+        return {
+          appId: sendConfig.appId,
+          chatId: sendConfig.chatId,
+          chatName: sendConfig.chatName,
+          receiveId: sendConfig.chatId,
+          appSecret: sendConfig.appSecret,
+        };
+      }),
+    };
+  });
+
+  setConfig({ listenChatGroupConfigArray });
+
+  const updateData = listenChatGroupConfigArray.map<FormValue>(
+    (listenConfig) => {
+      const sendConfig = listenConfig.linkSendConfigArray.map(
+        (sendConfigValue) => ({
+          appId: sendConfigValue.appId,
+          chatId: sendConfigValue.receiveId,
+          appSecret: sendConfigValue.appSecret,
+          chatName: sendConfigValue.chatName,
+        }),
+      );
+
+      return {
+        appId: listenConfig.appId,
+        chatId: listenConfig.chatId,
+        appSecret: listenConfig.appSecret,
+        chatName: listenConfig.chatName,
+        sendConfigArray: sendConfig,
+      };
+    },
+  );
+
+  event.reply('update-data', JSON.stringify(updateData));
 });
 
 ipcMain.on('get-chat-id', (event, appId: string, appSecret: string) => {

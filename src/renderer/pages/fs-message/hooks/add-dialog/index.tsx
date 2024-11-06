@@ -1,20 +1,9 @@
 import React from 'react';
 import { DeleteFilled, LinkOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Modal, Spin } from 'antd';
+import { Button, Card, Form, Input, message, Modal, Spin } from 'antd';
 import { useMount } from 'ahooks';
 import Styles from './index.module.scss';
-
-type FormValue = {
-  appId: string;
-  appSecret: string;
-  chatId: string;
-
-  sendConfig: {
-    appId: string;
-    appSecret: string;
-    chatId: string;
-  }[];
-};
+import { FormValue } from '../../../../../utils/type';
 
 type Config = {
   afterClose?: (value: FormValue) => void;
@@ -22,7 +11,8 @@ type Config = {
 
 const useAddDialog = (config: Config) => {
   const [form] = Form.useForm();
-  const sendConfigFormListName = 'sendList';
+  const [messageApi, contextHolder] = message.useMessage();
+  const sendConfigFormListName = 'sendConfigArray';
   const { afterClose } = config;
   const setConfig = React.useRef<{
     isSendConfig: boolean;
@@ -66,6 +56,11 @@ const useAddDialog = (config: Config) => {
     window.electron.ipcRenderer.on('get-chat-id', (chatId: string) => {
       setIsLoading(false);
 
+      if (chatId === 'timeout') {
+        messageApi.error({ content: '获取 chatId 超时' });
+        return;
+      }
+
       if (setConfig.current.isSendConfig && setConfig.current.name) {
         form.setFieldValue(
           [sendConfigFormListName, ...setConfig.current.name],
@@ -87,8 +82,17 @@ const useAddDialog = (config: Config) => {
         form.resetFields();
       }}
     >
+      {contextHolder}
       <div className={Styles.formWrapper}>
         <Form form={form} style={{ maxWidth: 580 }} labelCol={{ span: 6 }}>
+          <Form.Item
+            name="chatName"
+            rules={[{ required: true }]}
+            label="chatName"
+          >
+            <Input />
+          </Form.Item>
+
           <Form.Item name="appId" rules={[{ required: true }]} label="appId">
             <Input />
           </Form.Item>
@@ -103,7 +107,6 @@ const useAddDialog = (config: Config) => {
 
           <Form.Item name="chatId" rules={[{ required: true }]} label="chatId">
             <Input
-              disabled
               suffix={
                 <Button
                   type="primary"
@@ -149,6 +152,14 @@ const useAddDialog = (config: Config) => {
                         className={Styles.sendConfigCard}
                       >
                         <Form.Item
+                          name={[field.name, 'chatName']}
+                          rules={[{ required: true }]}
+                          label="chatName"
+                        >
+                          <Input />
+                        </Form.Item>
+
+                        <Form.Item
                           rules={[{ required: true }]}
                           label="appId"
                           name={[field.name, 'appId']}
@@ -170,7 +181,6 @@ const useAddDialog = (config: Config) => {
                           label="chatId"
                         >
                           <Input
-                            disabled
                             suffix={
                               <Button
                                 type="primary"
