@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Card, Table } from 'antd';
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useMount } from 'ahooks';
 import Styles from './index.module.scss';
 import useAddDialog from './hooks/add-dialog';
@@ -27,6 +27,10 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
 
   const handleChange = (record: FormValue) => {
     setRightTableData(record.sendConfigArray);
+  };
+
+  const handleOpenPuppeteer = () => {
+    window.electron.ipcRenderer.sendMessage('start-puppeteer');
   };
 
   React.useEffect(() => {
@@ -56,9 +60,15 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
     <div className={Styles.wrapper}>
       <div className={Styles.operateArea}>
         <Button
-          icon={<PlusCircleOutlined />}
-          type="text"
+          type="primary"
           onClick={toggleDialog}
+          icon={<PlusCircleOutlined />}
+        />
+
+        <Button
+          onClick={handleOpenPuppeteer}
+          type="primary"
+          icon={<ReloadOutlined />}
         />
       </div>
 
@@ -73,8 +83,15 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
             size="small"
             onRow={(record) => ({
               onClick: () => {
-                handleChange(record);
-                setSelectKeys([record.appId]);
+                setSelectKeys((value) => {
+                  if (value.length > 0) {
+                    handleChange([]);
+                    return [];
+                  }
+
+                  handleChange(record);
+                  return [record.appId];
+                });
               },
             })}
             scroll={{ y: scrollHeight }}
@@ -88,6 +105,11 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
               title="chatName"
               dataIndex="chatName"
               key="chatName"
+            />
+
+            <Table.Column
+              key="chatName"
+              render={() => <Button type="text">编辑</Button>}
             />
           </Table>
         </Card>

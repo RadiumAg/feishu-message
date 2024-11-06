@@ -17,6 +17,9 @@
 
   .operateArea {
     width: 100%;
+    display: flex;
+    column-gap: 8px;
+    margin-bottom: 8px;
   }
 
   .tableWrapper {

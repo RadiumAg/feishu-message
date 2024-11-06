@@ -6,7 +6,8 @@ export type Channels =
   | 'ipc-example'
   | 'get-chat-id'
   | 'set-config'
-  | 'update-data';
+  | 'update-data'
+  | 'start-puppeteer';
 
 const electronHandler = {
   ipcRenderer: {

@@ -20,7 +20,7 @@ const createWsClient = () => {
         'im.message.receive_v1': async (data) => {
           const {
             // eslint-disable-next-line camelcase
-            message: { content, message_type },
+            message: { message_id },
           } = data;
 
           wsClient.config.linkSendConfigArray.forEach((sendConfig) => {
@@ -31,16 +31,15 @@ const createWsClient = () => {
 
             if (sendConfig.receiveId == null) return null;
 
-            sendClient?.im.message.create({
+            sendClient?.im.message.forward({
               data: {
-                content,
                 // eslint-disable-next-line camelcase
-                msg_type: message_type,
                 receive_id: sendConfig.receiveId,
               },
               params: {
                 receive_id_type: 'chat_id',
               },
+              path: { message_id },
             });
           });
         },
