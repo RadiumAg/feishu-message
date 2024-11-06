@@ -22,7 +22,15 @@ type Config = {
 
 const useAddDialog = (config: Config) => {
   const [form] = Form.useForm();
+  const sendConfigFormListName = 'sendList';
   const { afterClose } = config;
+  const setConfig = React.useRef<{
+    isSendConfig: boolean;
+    name: [number, string] | undefined;
+  }>({
+    isSendConfig: false,
+    name: [0, ''],
+  });
   const [isLoading, setIsLoading] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
@@ -38,7 +46,14 @@ const useAddDialog = (config: Config) => {
     }
   };
 
-  const handleGetChatId = (sendValue: FormValue['sendConfig'][number]) => {
+  const handleGetChatId = (
+    sendValue: FormValue['sendConfig'][number],
+    name: [number, string] | undefined,
+    isSendConfig = false,
+  ) => {
+    setConfig.current.isSendConfig = isSendConfig;
+    setConfig.current.name = name;
+
     setIsLoading(true);
     window.electron.ipcRenderer.sendMessage(
       'get-chat-id',
@@ -51,7 +66,14 @@ const useAddDialog = (config: Config) => {
     window.electron.ipcRenderer.on('get-chat-id', (chatId: string) => {
       setIsLoading(false);
 
-      form.setFieldValue('chatId', chatId);
+      if (setConfig.current.isSendConfig && setConfig.current.name) {
+        form.setFieldValue(
+          [sendConfigFormListName, ...setConfig.current.name],
+          chatId,
+        );
+      } else {
+        form.setFieldValue('chatId', chatId);
+      }
     });
   });
 
@@ -80,24 +102,29 @@ const useAddDialog = (config: Config) => {
           </Form.Item>
 
           <Form.Item name="chatId" rules={[{ required: true }]} label="chatId">
-            <div className={Styles.chatId}>
-              <Input />
-              <Button
-                type="primary"
-                onClick={() => {
-                  handleGetChatId(form.getFieldsValue(['appId', 'appSecret']));
-                }}
-              >
-                获取
-              </Button>
-            </div>
+            <Input
+              suffix={
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    handleGetChatId(
+                      form.getFieldsValue(['appId', 'appSecret']),
+                      undefined,
+                      false,
+                    );
+                  }}
+                >
+                  获取
+                </Button>
+              }
+            />
           </Form.Item>
 
           <div className={Styles.link}>
             <LinkOutlined size={40} />
           </div>
 
-          <Form.List name="sendConfig">
+          <Form.List name={sendConfigFormListName}>
             {(fields, { add, remove }) => {
               return (
                 <>
@@ -137,30 +164,35 @@ const useAddDialog = (config: Config) => {
                         </Form.Item>
 
                         <Form.Item
-                          name="chatId"
+                          name={[field.name, 'chatId']}
                           rules={[{ required: true }]}
                           label="chatId"
                         >
-                          <div className={Styles.chatId}>
-                            <Input />
-                            <Button
-                              type="primary"
-                              onClick={() => {
-                                handleGetChatId(
-                                  form.getFieldValue('sendConfig')[field.name],
-                                );
-                              }}
-                            >
-                              获取
-                            </Button>
-                          </div>
+                          <Input
+                            suffix={
+                              <Button
+                                type="primary"
+                                onClick={() => {
+                                  handleGetChatId(
+                                    form.getFieldValue(sendConfigFormListName)[
+                                      field.name
+                                    ],
+                                    [field.name, 'chatId'],
+                                    true,
+                                  );
+                                }}
+                              >
+                                获取
+                              </Button>
+                            }
+                          />
                         </Form.Item>
                       </Card>
                     );
                   })}
 
                   <Button type="dashed" onClick={() => add()} block>
-                    Add SendConfig
+                    添加发送配置
                   </Button>
                 </>
               );
