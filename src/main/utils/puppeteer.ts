@@ -22,7 +22,6 @@ const runPuppeteer = async () => {
     )._?.textContent;
 
     if (elementUserName === userName) {
-      messageListElement.
     }
   }, 1000);
 };
