@@ -23,7 +23,7 @@ const runPuppeteer = async () => {
 
   // 监听messageList改变
   await page.evaluate(() => {
-    const sizeObserver = new ResizeObserver(async () => {
+    const sizeObserver = new MutationObserver(async () => {
       const messageListElement = await page.locator(
         '.messageList-row-wrapper:last-child',
       )._;
@@ -40,7 +40,9 @@ const runPuppeteer = async () => {
 
     if (messageListElement == null) return;
 
-    sizeObserver.observe(messageListElement);
+    sizeObserver.observe(messageListElement, {
+      childList: true,
+    });
   });
 
   setTimeout(async () => {}, 1000);
