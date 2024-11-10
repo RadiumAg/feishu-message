@@ -1,11 +1,9 @@
 import puppeteer from 'puppeteer';
 
 const userName = 'Radium';
-const listenMessageEventName = 'listen-message';
+const listenMessageEventName = 'listenMessage';
 
-const checkSendName = (sendUserName: string, node: Node) => {
-  while (userName !== sendUserName &&  node.c) {}
-};
+const checkSendName = (sendUserName: string, node: Node) => {};
 
 const runPuppeteer = async () => {
   const browser = await puppeteer.launch({
@@ -26,21 +24,30 @@ const runPuppeteer = async () => {
     console.log(message);
   });
 
+  await page.waitForSelector('.messageList');
+
   // 监听messageList改变
   await page.evaluate(() => {
     const mutationObserver = new MutationObserver((mutationsList) => {
+      console.error('mutationsList', mutationsList);
+
       // eslint-disable-next-line no-restricted-syntax
       for (const mutation of mutationsList) {
-        const addNodes = mutation.addedNodes;
-        addNodes.forEach((node) => {
-          node.previousSibling;
-        });
-      }
+        console.error('classList', (mutation.target as HTMLElement).classList);
 
-      window['listen-message']();
+        if (
+          (mutation.target as HTMLElement).classList.contains(
+            'messageItem-wrapper',
+          )
+        ) {
+          console.log(mutation.target.textContent);
+          window.listenMessage(mutation.target.textContent!);
+        }
+      }
     });
 
     const messageListElement = document.querySelector('.messageList');
+
     if (messageListElement == null) return;
 
     mutationObserver.observe(messageListElement, {
