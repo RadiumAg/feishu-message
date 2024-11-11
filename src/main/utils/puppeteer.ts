@@ -12,19 +12,22 @@ const listenMessageEventName = 'listenMessage';
 type MessageType = 'text-only' | 'rich-message' | 'image-only';
 
 const getImageKey = async (url: string, page: Page) => {
-  const imageData = await page.evaluate(async (blobUrl) => {
+  const { imageData, type } = (await page.evaluate(async (blobUrl) => {
     const response = await fetch(blobUrl);
     const blob = await response.blob();
     const reader = new FileReader();
     return new Promise((resolve) => {
       reader.onloadend = () => {
-        resolve(reader.result);
+        resolve({ imageData: reader.result, type: blob.type });
       };
-      reader.readAsArrayBuffer(blob);
+      reader.readAsDataURL(blob);
     });
-  }, url);
+  }, url)) as { imageData: string; type: string };
 
-  const image = await images(imageData);
+  // 将 Base64 编码的字符串转换为 Buffer 对象
+  const buffer = Buffer.from(imageData, 'base64');
+  const file = new File([buffer], `filename.${type}`, { type: 'text/plain' });
+  const image = await images(file);
   return image.data.image_key;
 };
 

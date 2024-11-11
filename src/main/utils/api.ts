@@ -16,13 +16,16 @@ const images = async (image: any) => {
       },
       {
         headers: {
-          Authorization: 't-g104bbiGUM2Z2ONWDP2IZP3ZIC2F2WJ2CX3RDRJP',
+          Authorization: 'Bearer t-g104bbknYG23BZW75B5QIJIP2U52LBCTDUHSVBE4',
           'Content-Type': 'multipart/form-data; boundary=---7MA4YWxkTrZu0gW',
         },
       },
     )
     .then((data) => {
       return data.data;
+    })
+    .catch((e) => {
+      console.error(e);
     });
 };
 
