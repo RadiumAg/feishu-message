@@ -5,7 +5,7 @@ import { ImageMessage, TextMessage } from './puppeteer';
  * 创建监听端对象
  *
  */
-const createWsClient = (
+const sendMessage = (
   // eslint-disable-next-line no-undef
   sendConfigArray: ListenChatGroupConfig['linkSendConfigArray'],
   message: TextMessage | ImageMessage,
@@ -16,7 +16,7 @@ const createWsClient = (
       appSecret: sendConfig.appSecret,
     });
 
-    if (sendConfig.receiveId == null) return null;
+    if (sendConfig.receiveId == null) return;
 
     sendClient?.im.message.create({
       data: {
@@ -31,4 +31,4 @@ const createWsClient = (
   });
 };
 
-export { createWsClient };
+export { sendMessage };

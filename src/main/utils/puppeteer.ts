@@ -1,4 +1,7 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
 import puppeteer, { Page } from 'puppeteer';
+import { sendMessage } from './message';
 
 const userName = 'Radium';
 const listenMessageEventName = 'listenMessage';
@@ -18,11 +21,18 @@ type MessageType = 'text-only' | 'rich-message' | 'image-only';
  *
  * @param {Page} page
  */
-const evaluateListenMessaggee = async (page: Page) => {
+const evaluateListenMessaggee = async (
+  page: Page,
+  // eslint-disable-next-line no-undef
+  config: ListenChatGroupConfig,
+) => {
   // 使用page.exposeFunction()监听浏览器向nodejs发送事件回调
-  await page.exposeFunction(listenMessageEventName, (message) => {
-    console.log(message);
-  });
+  await page.exposeFunction(
+    listenMessageEventName,
+    (message: ImageMessage | TextMessage) => {
+      sendMessage(config.linkSendConfigArray, message);
+    },
+  );
 
   // 等待messageList加载完成
   await page.waitForSelector('.messageList');
@@ -39,8 +49,11 @@ const evaluateListenMessaggee = async (page: Page) => {
      */
     const getMessageType = (message: HTMLElement): MessageType | undefined => {
       if (message.classList.contains('richTextDocs')) return 'rich-message';
+
       if (message.classList.contains('text-only')) return 'text-only';
+
       if (message.classList.contains('img-container')) return 'image-only';
+
       return undefined;
     };
 
@@ -90,6 +103,7 @@ const evaluateListenMessaggee = async (page: Page) => {
           return imgRecord;
         }
       }
+      return [];
     };
 
     const mutationObserver = new MutationObserver((mutationsList) => {
@@ -207,21 +221,24 @@ const evaluateListenMessaggee = async (page: Page) => {
   });
 };
 
-const runPuppeteer = async () => {
-  const browser = await puppeteer.launch({
-    headless: false,
-    devtools: true,
-    defaultViewport: null,
-    args: ['--remote-debugging-port=9222'],
-  });
+// eslint-disable-next-line no-undef
+const runPuppeteer = async (configArray: ListenChatGroupConfig[]) => {
+  for (const config of configArray) {
+    const browser = await puppeteer.launch({
+      headless: false,
+      devtools: true,
+      defaultViewport: null,
+      args: ['--remote-debugging-port=9222'],
+    });
 
-  const page = await browser.newPage();
-  await page.goto('https://ezeb4r28vm.feishu.cn/next/messenger');
-  await page
-    .locator('[data-feed-id="7433401383485063169"] .a11y_feed_card_item')
-    .click();
+    const page = await browser.newPage();
+    await page.goto('https://ezeb4r28vm.feishu.cn/next/messenger');
+    await page
+      .locator('[data-feed-id="7433401383485063169"] .a11y_feed_card_item')
+      .click();
 
-  await evaluateListenMessaggee(page);
+    await evaluateListenMessaggee(page, config);
+  }
 };
 
 export { runPuppeteer };
