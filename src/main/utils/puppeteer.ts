@@ -3,7 +3,6 @@
 import puppeteer, { Page } from 'puppeteer';
 import { sendMessage } from './message';
 
-const userName = 'Radium';
 const listenMessageEventName = 'listenMessage';
 
 type ImageMessage = { tag: 'img'; image_key: string };

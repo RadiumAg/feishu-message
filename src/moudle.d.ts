@@ -10,6 +10,7 @@ type SendChatGroupConfig = {
 type ListenChatGroupConfig = {
   feedId: string;
   chatName: string;
+  userName?: string;
   linkSendConfigArray: SendChatGroupConfig[];
 };
 
