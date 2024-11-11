@@ -3,6 +3,7 @@ import * as Lark from '@larksuiteoapi/node-sdk';
 import { setConfig } from './config';
 import { FormValue } from '../utils/type';
 import { runPuppeteer } from './utils/puppeteer';
+
 import { createWsClient } from './utils/message';
 
 ipcMain.on('set-config', (event, globalConfig: string) => {

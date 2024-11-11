@@ -225,3 +225,4 @@ const runPuppeteer = async () => {
 };
 
 export { runPuppeteer };
+export type { ImageMessage, TextMessage };
