@@ -32,49 +32,59 @@ const evaluateListenMessaggee = async (page: Page) => {
     let sendMessageObject = {};
     const messageListElement = document.querySelector('.messageList');
 
+    /**
+     * 获取消息类型
+     * @param message
+     * @returns
+     */
     const getMessageType = (message: HTMLElement): MessageType | undefined => {
-      if (message.classList.contains('.richTextDocs')) return 'rich-message';
-      if (message.classList.contains('.richTextContainer')) return 'text-only';
-      if (message.classList.contains('.img-container')) return 'image-only';
+      if (message.classList.contains('richTextDocs')) return 'rich-message';
+      if (message.classList.contains('text-only')) return 'text-only';
+      if (message.classList.contains('img-container')) return 'image-only';
       return undefined;
     };
 
     const createMessageObject = (
       message: HTMLElement,
-    ): ImageMessage[] | TextMessage[] | undefined => {
-      if (message.classList.contains('rich-text-paragraph')) {
-        const textElementObject: TextMessage[] = [];
+      type: MessageType,
+    ): (ImageMessage | TextMessage)[] | [] => {
+      if (type === 'text-only') {
+        const textElementObject: TextMessage = {
+          text: '',
+          tag: 'text',
+          style: [],
+        };
 
-        const textElementArray = message.querySelectorAll('.text-only');
-        textElementArray.forEach((textElement) => {
-          if (textElement == null) return;
+        textElementObject.text = message.textContent || '';
 
-          textElementObject.push({
-            tag: 'text',
-            text: message.innerText,
-            style: [],
-          });
-        });
-
-        return textElementObject;
+        return [textElementObject];
       }
-      if (message.classList.contains('rich-text-image')) {
-        const imageObjectArray: ImageMessage[] = [];
-        const imgElementArray = message.querySelectorAll('img');
+      if (type === 'rich-message') {
+        const textRecord = [];
+        const imgRecord = [];
 
-        imgElementArray.forEach((imgElement) => {
-          if (imgElement == null) return;
+        const textRecordElementArray = message.querySelector(
+          '.rich-text-paragraph',
+        )?.children;
+        const imgRecordElementArray = message.querySelector(
+          '.figure.rich-text-image',
+        )?.children;
 
-          imageObjectArray.push({
-            tag: 'img',
-            image_key: imgElement.src,
-          });
-        });
-
-        return imageObjectArray;
+        if (textRecordElementArray) {
+          for (
+            let index = 0;
+            index < textRecordElementArray.length;
+            index += 1
+          ) {
+            const textRecordContent = textRecordElementArray.item(index);
+            textRecord.push({
+              type: 'text',
+              style: [],
+              text: textRecordContent?.textContent,
+            });
+          }
+        }
       }
-
-      return undefined;
     };
 
     const mutationObserver = new MutationObserver((mutationsList) => {
@@ -99,7 +109,7 @@ const evaluateListenMessaggee = async (page: Page) => {
           switch (messageType) {
             case 'rich-message': {
               const childrenElementList =
-                messageListElement?.querySelector('.richTextDocs')?.children;
+                messageWrapper?.querySelector('.richTextDocs')?.children;
 
               if (
                 childrenElementList == null ||
@@ -114,7 +124,10 @@ const evaluateListenMessaggee = async (page: Page) => {
                 const element = childrenElementList.item(index);
                 if (element == null) return;
 
-                const contentItem = createMessageObject(element as HTMLElement);
+                const contentItem = createMessageObject(
+                  element as HTMLElement,
+                  'rich-message',
+                );
                 if (contentItem)
                   (sendMessageObject as RichDocMessage).content.push(
                     ...contentItem,
@@ -125,6 +138,35 @@ const evaluateListenMessaggee = async (page: Page) => {
             }
 
             case 'text-only': {
+              const childrenElementList =
+                messageWrapper?.querySelector('.richTextContainer')?.children;
+
+              if (
+                childrenElementList == null ||
+                childrenElementList.length === 0
+              )
+                return;
+
+              console.log('childrenElementList', childrenElementList);
+
+              for (
+                let index = 0;
+                index < childrenElementList?.length;
+                index += 1
+              ) {
+                const element = childrenElementList.item(index);
+                if (element == null) return;
+
+                const contentItem = createMessageObject(
+                  element as HTMLElement,
+                  'text-only',
+                );
+                if (contentItem)
+                  (sendMessageObject as RichDocMessage).content.push(
+                    ...contentItem,
+                  );
+              }
+
               break;
             }
 
