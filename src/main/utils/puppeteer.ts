@@ -4,7 +4,6 @@ const userName = 'Radium';
 const listenMessageEventName = 'listenMessage';
 
 type ImageMessage = { tag: 'img'; image_key: string };
-
 type TextMessage = { tag: 'text'; text: string; style: string };
 
 type RichDocMessage = {
@@ -21,7 +20,13 @@ const getMessageType = (message: HTMLElement): MessageType | undefined => {
   return undefined;
 };
 
-const getMessageObject = () => {};
+const createMessageObject = (message: HTMLElement) => {
+  if (message.classList.contains('text-only'))
+    return {
+      tag: 'text',
+      text: message.innerText,
+    };
+};
 
 const runPuppeteer = async () => {
   const browser = await puppeteer.launch({
@@ -73,15 +78,22 @@ const runPuppeteer = async () => {
                 index += 1
               ) {
                 const element = childrenElementList.item(index);
+                if (element == null) return;
+
+                createMessageObject(element as HTMLElement);
+
                 sendMessageObject = {
                   text: '',
                   content: [],
                 };
               }
+
+              break;
             }
 
-            default:
+            default: {
               break;
+            }
           }
 
           window.listenMessage(sendMessageObject);
