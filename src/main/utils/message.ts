@@ -1,5 +1,5 @@
 import * as Lark from '@larksuiteoapi/node-sdk';
-import { ImageMessage, TextMessage } from './puppeteer';
+import { TextMessage, ImageMessage } from './type';
 
 /**
  * 创建监听端对象
@@ -17,12 +17,19 @@ const sendMessage = (
     });
 
     if (sendConfig.receiveId == null) return;
+    console.log(
+      JSON.stringify({
+        zh_cn: message,
+      }),
+    );
 
     sendClient?.im.message.create({
       data: {
         msg_type: 'post',
         receive_id: sendConfig.receiveId,
-        content: JSON.stringify(message),
+        content: JSON.stringify({
+          zh_cn: message,
+        }),
       },
       params: {
         receive_id_type: 'chat_id',

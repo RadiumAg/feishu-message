@@ -30,12 +30,15 @@ const useAddDialog = (config: Config) => {
       setIsModalOpen(false);
       console.log('form.getFieldsValue()', form.getFieldsValue());
       afterClose?.(form.getFieldsValue());
+      form.resetFields();
     } catch (e) {
       console.error(e);
-    } finally {
-      form.resetFields();
     }
   };
+
+  useMount(() => {
+    form.setFieldValue('feedId', '7433401383485063169');
+  });
 
   const handleGetChatId = (
     sendValue: FormValue['sendConfigArray'][number],

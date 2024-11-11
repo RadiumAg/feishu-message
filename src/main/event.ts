@@ -4,8 +4,6 @@ import { setConfig } from './config';
 import { FormValue } from '../utils/type';
 import { runPuppeteer } from './utils/puppeteer';
 
-import { createWsClient } from './utils/message';
-
 ipcMain.on('set-config', (event, globalConfig: string) => {
   const config = JSON.parse(globalConfig) as FormValue[];
 
@@ -40,16 +38,13 @@ ipcMain.on('set-config', (event, globalConfig: string) => {
       );
 
       return {
-        appId: listenConfig.appId,
-        chatId: listenConfig.chatId,
-        appSecret: listenConfig.appSecret,
+        feedId: listenConfig.feedId,
         chatName: listenConfig.chatName,
         sendConfigArray: sendConfig,
       };
     },
   );
 
-  createWsClient();
   event.reply('update-data', JSON.stringify(updateData));
 });
 

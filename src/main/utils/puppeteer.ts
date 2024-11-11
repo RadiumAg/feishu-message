@@ -2,15 +2,14 @@
 /* eslint-disable no-restricted-syntax */
 import puppeteer, { Page } from 'puppeteer';
 import { sendMessage } from './message';
+import { ImageMessage, TextMessage } from './type';
+import { globalConfig } from '../config';
 
 const listenMessageEventName = 'listenMessage';
 
-type ImageMessage = { tag: 'img'; image_key: string };
-type TextMessage = { tag: 'text'; text: string; style: string[] };
-
 type RichDocMessage = {
   title: string;
-  content: (TextMessage | ImageMessage)[];
+  content: (TextMessage | ImageMessage)[][];
 };
 
 type MessageType = 'text-only' | 'rich-message' | 'image-only';
@@ -38,7 +37,6 @@ const evaluateListenMessaggee = async (
 
   // 监听messageList改变
   await page.evaluate(() => {
-    let sendMessageObject = {};
     const messageListElement = document.querySelector('.messageList');
 
     /**
@@ -117,6 +115,10 @@ const evaluateListenMessaggee = async (
 
       // eslint-disable-next-line no-restricted-syntax
       for (const addNode of addedNodes) {
+        const sendMessageObject: RichDocMessage = {
+          title: '',
+          content: [],
+        };
         const messageWrapper = addNode as HTMLElement;
 
         if (messageWrapper.classList.contains('messageList-row-wrapper')) {
@@ -127,11 +129,6 @@ const evaluateListenMessaggee = async (
           if (richDocElement == null) return;
           const messageType = getMessageType(richDocElement as HTMLElement);
           console.log('messageType', messageType);
-
-          sendMessageObject = {
-            text: '',
-            content: [],
-          };
 
           switch (messageType) {
             case 'rich-message': {
@@ -157,7 +154,7 @@ const evaluateListenMessaggee = async (
                 );
                 if (contentItem)
                   (sendMessageObject as RichDocMessage).content.push(
-                    ...contentItem,
+                    contentItem,
                   );
               }
 
@@ -190,7 +187,7 @@ const evaluateListenMessaggee = async (
                 );
                 if (contentItem)
                   (sendMessageObject as RichDocMessage).content.push(
-                    ...contentItem,
+                    contentItem,
                   );
               }
 
@@ -206,7 +203,8 @@ const evaluateListenMessaggee = async (
             }
           }
 
-          window.listenMessage(sendMessageObject);
+          if (sendMessageObject.content.length > 0)
+            window.listenMessage(sendMessageObject);
         }
       }
     });
@@ -221,19 +219,20 @@ const evaluateListenMessaggee = async (
 };
 
 // eslint-disable-next-line no-undef
-const runPuppeteer = async (configArray: ListenChatGroupConfig[]) => {
-  for (const config of configArray) {
-    const browser = await puppeteer.launch({
-      headless: false,
-      devtools: true,
-      defaultViewport: null,
-      args: ['--remote-debugging-port=9222'],
-    });
+const runPuppeteer = async () => {
+  const { listenChatGroupConfigArray } = globalConfig;
+  const browser = await puppeteer.launch({
+    headless: false,
+    devtools: true,
+    defaultViewport: null,
+    args: ['--remote-debugging-port=9222'],
+  });
 
+  for (const config of listenChatGroupConfigArray) {
     const page = await browser.newPage();
     await page.goto('https://ezeb4r28vm.feishu.cn/next/messenger');
     await page
-      .locator('[data-feed-id="7433401383485063169"] .a11y_feed_card_item')
+      .locator(`[data-feed-id="${config.feedId}"] .a11y_feed_card_item`)
       .click();
 
     await evaluateListenMessaggee(page, config);
