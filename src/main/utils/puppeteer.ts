@@ -4,11 +4,11 @@ const userName = 'Radium';
 const listenMessageEventName = 'listenMessage';
 
 type ImageMessage = { tag: 'img'; image_key: string };
-type TextMessage = { tag: 'text'; text: string; style: string };
+type TextMessage = { tag: 'text'; text: string; style: string[] };
 
 type RichDocMessage = {
   title: string;
-  content: TextMessage[] | ImageMessage[];
+  content: (TextMessage | ImageMessage)[];
 };
 
 type MessageType = 'text-only' | 'rich-message' | 'image-only';
@@ -20,12 +20,26 @@ const getMessageType = (message: HTMLElement): MessageType | undefined => {
   return undefined;
 };
 
-const createMessageObject = (message: HTMLElement) => {
-  if (message.classList.contains('text-only'))
+const createMessageObject = (
+  message: HTMLElement,
+): ImageMessage | TextMessage | undefined => {
+  if (message.classList.contains('text-only')) {
     return {
       tag: 'text',
       text: message.innerText,
+      style: [],
     };
+  }
+  if (message.classList.contains('img-container')) {
+    const img = message.querySelector('img');
+    if (img == null) return undefined;
+    return {
+      tag: 'img',
+      image_key: img.src,
+    };
+  }
+
+  return undefined;
 };
 
 const runPuppeteer = async () => {
@@ -61,6 +75,10 @@ const runPuppeteer = async () => {
 
         if (messageWrapper.classList.contains('messageItem-wrapper')) {
           const messageType = getMessageType(messageWrapper);
+          sendMessageObject = {
+            text: '',
+            content: [],
+          };
 
           switch (messageType) {
             case 'rich-message': {
@@ -80,14 +98,21 @@ const runPuppeteer = async () => {
                 const element = childrenElementList.item(index);
                 if (element == null) return;
 
-                createMessageObject(element as HTMLElement);
-
-                sendMessageObject = {
-                  text: '',
-                  content: [],
-                };
+                const contentItem = createMessageObject(element as HTMLElement);
+                if (contentItem)
+                  (sendMessageObject as RichDocMessage).content.push(
+                    contentItem,
+                  );
               }
 
+              break;
+            }
+
+            case 'text-only': {
+              break;
+            }
+
+            case 'image-only': {
               break;
             }
 
