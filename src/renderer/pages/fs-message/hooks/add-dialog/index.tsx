@@ -28,6 +28,7 @@ const useAddDialog = (config: Config) => {
     try {
       await form.validateFields();
       setIsModalOpen(false);
+      console.log('form.getFieldsValue()', form.getFieldsValue());
       afterClose?.(form.getFieldsValue());
     } catch (e) {
       console.error(e);
@@ -93,35 +94,8 @@ const useAddDialog = (config: Config) => {
             <Input />
           </Form.Item>
 
-          <Form.Item name="appId" rules={[{ required: true }]} label="appId">
+          <Form.Item name="feedId" rules={[{ required: true }]} label="feedId">
             <Input />
-          </Form.Item>
-
-          <Form.Item
-            name="appSecret"
-            rules={[{ required: true }]}
-            label="appSecret"
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item name="chatId" rules={[{ required: true }]} label="chatId">
-            <Input
-              suffix={
-                <Button
-                  type="primary"
-                  onClick={() => {
-                    handleGetChatId(
-                      form.getFieldsValue(['appId', 'appSecret']),
-                      undefined,
-                      false,
-                    );
-                  }}
-                >
-                  获取
-                </Button>
-              }
-            />
           </Form.Item>
 
           <div className={Styles.link}>
