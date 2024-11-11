@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 import puppeteer, { Page } from 'puppeteer';
+import * as Lark from '@larksuiteoapi/node-sdk';
 import { sendMessage } from './message';
 import { ImageMessage, TextMessage } from './type';
 import { globalConfig } from '../config';
@@ -93,7 +94,7 @@ const evaluateListenMessaggee = async (
             const element = imageMessageArray.item(index);
             imgRecord.push({
               tag: 'img',
-              image_key: element?.dataset.imageKey,
+              image_key: element?.dataset.imageKey?.replace('_MIDDLE', ''),
             } as ImageMessage);
           }
 
