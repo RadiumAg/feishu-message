@@ -3,17 +3,30 @@
 import puppeteer, { Page } from 'puppeteer';
 import * as Lark from '@larksuiteoapi/node-sdk';
 import { sendMessage } from './message';
-import { ImageMessage, TextMessage } from './type';
+import { ImageMessage, RichDocMessage, TextMessage } from './type';
 import { globalConfig } from '../config';
+import { images } from './api';
 
 const listenMessageEventName = 'listenMessage';
 
-type RichDocMessage = {
-  title: string;
-  content: (TextMessage | ImageMessage)[][];
-};
-
 type MessageType = 'text-only' | 'rich-message' | 'image-only';
+
+const getImageKey = async (url: string, page: Page) => {
+  const imageData = await page.evaluate(async (blobUrl) => {
+    const response = await fetch(blobUrl);
+    const blob = await response.blob();
+    const reader = new FileReader();
+    return new Promise((resolve) => {
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+      reader.readAsArrayBuffer(blob);
+    });
+  }, url);
+
+  const image = await images(imageData);
+  return image.data.image_key;
+};
 
 /**
  * 监听消息列表
@@ -28,7 +41,13 @@ const evaluateListenMessaggee = async (
   // 使用page.exposeFunction()监听浏览器向nodejs发送事件回调
   await page.exposeFunction(
     listenMessageEventName,
-    (message: ImageMessage | TextMessage) => {
+    async (message: RichDocMessage) => {
+      for (const content of message.content
+        .flat()
+        .filter((msg) => msg.tag === 'img')) {
+        content.image_key = await getImageKey(content.image_key, page);
+      }
+
       sendMessage(config.linkSendConfigArray, message);
     },
   );
@@ -94,7 +113,7 @@ const evaluateListenMessaggee = async (
             const element = imageMessageArray.item(index);
             imgRecord.push({
               tag: 'img',
-              image_key: element?.dataset.imageKey?.replace('_MIDDLE', ''),
+              image_key: element?.src,
             } as ImageMessage);
           }
 

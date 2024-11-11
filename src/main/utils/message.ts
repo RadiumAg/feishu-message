@@ -1,5 +1,5 @@
 import * as Lark from '@larksuiteoapi/node-sdk';
-import { TextMessage, ImageMessage } from './type';
+import { RichDocMessage } from './type';
 
 /**
  * 创建监听端对象
@@ -8,7 +8,7 @@ import { TextMessage, ImageMessage } from './type';
 const sendMessage = (
   // eslint-disable-next-line no-undef
   sendConfigArray: ListenChatGroupConfig['linkSendConfigArray'],
-  message: TextMessage | ImageMessage,
+  message: RichDocMessage,
 ) => {
   sendConfigArray.forEach((sendConfig) => {
     const sendClient = new Lark.Client({
