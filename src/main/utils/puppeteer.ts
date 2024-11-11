@@ -3,7 +3,25 @@ import puppeteer from 'puppeteer';
 const userName = 'Radium';
 const listenMessageEventName = 'listenMessage';
 
-const checkSendName = (sendUserName: string, node: Node) => {};
+type ImageMessage = { tag: 'img'; image_key: string };
+
+type TextMessage = { tag: 'text'; text: string; style: string };
+
+type RichDocMessage = {
+  title: string;
+  content: TextMessage[] | ImageMessage[];
+};
+
+type MessageType = 'text-only' | 'rich-message' | 'image-only';
+
+const getMessageType = (message: HTMLElement): MessageType | undefined => {
+  if (message.classList.contains('.richTextDocs')) return 'rich-message';
+  if (message.classList.contains('.richTextContainer')) return 'text-only';
+  if (message.classList.contains('.img-container')) return 'image-only';
+  return undefined;
+};
+
+const getMessageObject = () => {};
 
 const runPuppeteer = async () => {
   const browser = await puppeteer.launch({
@@ -28,25 +46,48 @@ const runPuppeteer = async () => {
 
   // 监听messageList改变
   await page.evaluate(() => {
-    const mutationObserver = new MutationObserver((mutationsList) => {
-      console.error('mutationsList', mutationsList);
+    let sendMessageObject = {};
+    const messageListElement = document.querySelector('.messageList');
 
+    const mutationObserver = new MutationObserver((mutationsList) => {
       // eslint-disable-next-line no-restricted-syntax
       for (const mutation of mutationsList) {
-        console.error('classList', (mutation.target as HTMLElement).classList);
+        const messageWrapper = mutation.target as HTMLElement;
 
-        if (
-          (mutation.target as HTMLElement).classList.contains(
-            'messageItem-wrapper',
-          )
-        ) {
-          console.log(mutation.target.textContent);
-          window.listenMessage(mutation.target.textContent!);
+        if (messageWrapper.classList.contains('messageItem-wrapper')) {
+          const messageType = getMessageType(messageWrapper);
+
+          switch (messageType) {
+            case 'rich-message': {
+              const childrenElementList =
+                messageListElement?.querySelector('.richTextDocs')?.children;
+
+              if (
+                childrenElementList == null ||
+                childrenElementList.length === 0
+              )
+                return;
+              for (
+                let index = 0;
+                index < childrenElementList?.length;
+                index += 1
+              ) {
+                const element = childrenElementList.item(index);
+                sendMessageObject = {
+                  text: '',
+                  content: [],
+                };
+              }
+            }
+
+            default:
+              break;
+          }
+
+          window.listenMessage(sendMessageObject);
         }
       }
     });
-
-    const messageListElement = document.querySelector('.messageList');
 
     if (messageListElement == null) return;
 

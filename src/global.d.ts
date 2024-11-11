@@ -1,1 +1,1 @@
-declare function listenMessage(message: string): void;
+declare function listenMessage(message: Record<string, any>): void;

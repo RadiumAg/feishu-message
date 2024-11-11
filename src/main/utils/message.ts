@@ -20,9 +20,10 @@ const createWsClient = () => {
         'im.message.receive_v1': async (data) => {
           const {
             // eslint-disable-next-line camelcase
-            message: { message_id },
+            message: { message_id, message_type },
           } = data;
 
+          console.log(data);
           wsClient.config.linkSendConfigArray.forEach((sendConfig) => {
             const sendClient = new Lark.Client({
               appId: sendConfig.appId,
