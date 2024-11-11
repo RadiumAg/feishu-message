@@ -10,10 +10,9 @@ ipcMain.on('set-config', (event, globalConfig: string) => {
 
   const listenChatGroupConfigArray = config.map((configValue) => {
     return {
-      appId: configValue.appId,
-      chatId: configValue.chatId,
       chatName: configValue.chatName,
-      appSecret: configValue.appSecret,
+      feedId: configValue.feedId,
+
       linkSendConfigArray: configValue.sendConfigArray?.map((sendConfig) => {
         return {
           appId: sendConfig.appId,

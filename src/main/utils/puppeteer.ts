@@ -47,7 +47,7 @@ const evaluateListenMessaggee = async (page: Page) => {
     const createMessageObject = (
       message: HTMLElement,
       type: MessageType,
-    ): (ImageMessage | TextMessage)[] | [] => {
+    ): (ImageMessage | TextMessage)[] => {
       if (type === 'text-only') {
         const textElementObject: TextMessage = {
           text: '',
@@ -60,39 +60,53 @@ const evaluateListenMessaggee = async (page: Page) => {
         return [textElementObject];
       }
       if (type === 'rich-message') {
-        const textRecord = [];
-        const imgRecord = [];
+        if (message.classList.contains('rich-text-paragraph')) {
+          const textRecord = [];
+          const textOnlyMessageArray = message.children;
 
-        const textRecordElementArray = message.querySelector(
-          '.rich-text-paragraph',
-        )?.children;
-        const imgRecordElementArray = message.querySelector(
-          '.figure.rich-text-image',
-        )?.children;
-
-        if (textRecordElementArray) {
-          for (
-            let index = 0;
-            index < textRecordElementArray.length;
-            index += 1
-          ) {
-            const textRecordContent = textRecordElementArray.item(index);
+          for (let index = 0; index < textOnlyMessageArray.length; index += 1) {
+            const element = textOnlyMessageArray.item(index);
             textRecord.push({
-              type: 'text',
+              tag: 'text',
+              text: element?.textContent || '',
               style: [],
-              text: textRecordContent?.textContent,
-            });
+            } as TextMessage);
           }
+
+          return textRecord;
+        }
+        if (message.classList.contains('rich-text-image')) {
+          const imgRecord = [];
+          const imageMessageArray = message.querySelectorAll('img');
+
+          for (let index = 0; index < imageMessageArray.length; index += 1) {
+            const element = imageMessageArray.item(index);
+            imgRecord.push({
+              tag: 'img',
+              image_key: element?.dataset.imageKey,
+            } as ImageMessage);
+          }
+
+          return imgRecord;
         }
       }
     };
 
     const mutationObserver = new MutationObserver((mutationsList) => {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const mutation of mutationsList) {
-        const messageWrapper = mutation.target as HTMLElement;
+      const addedNodes: Node[] = [];
 
-        if (messageWrapper.classList.contains('messageItem-wrapper')) {
+      mutationsList.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          addedNodes.push(node);
+        });
+      });
+      console.log('addNodes', addedNodes);
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const addNode of addedNodes) {
+        const messageWrapper = addNode as HTMLElement;
+
+        if (messageWrapper.classList.contains('messageList-row-wrapper')) {
           const richDocElement = messageWrapper.querySelector(
             '.richTextContainer > *',
           );

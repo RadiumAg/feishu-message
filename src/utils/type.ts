@@ -1,7 +1,5 @@
 type FormValue = {
-  appId: string;
-  appSecret: string;
-  chatId: string;
+  feedId: string;
   chatName: string;
 
   sendConfigArray: {

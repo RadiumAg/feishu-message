@@ -8,10 +8,8 @@ type SendChatGroupConfig = {
 };
 
 type ListenChatGroupConfig = {
-  appId: string;
-  chatId: string;
+  feedId: string;
   chatName: string;
-  appSecret: string;
   linkSendConfigArray: SendChatGroupConfig[];
 };
 
