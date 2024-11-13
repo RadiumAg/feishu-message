@@ -65,7 +65,7 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
           icon={<PlusCircleOutlined />}
         />
 
-        <Button
+        <Button  
           onClick={handleOpenPuppeteer}
           type="primary"
           icon={<ReloadOutlined />}
@@ -75,7 +75,7 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
       <div className={Styles.tableWrapper} ref={setWrapperRef}>
         <Card className={Styles.leftTable} title="监听群配置">
           <Table
-            rowKey={(record) => record.appId}
+            rowKey={(record) => record.feedId}
             rowSelection={{
               type: 'radio',
               selectedRowKeys: selectionKeys,
@@ -90,7 +90,7 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
                   }
 
                   handleChange(record);
-                  return [record.appId];
+                  return [record.feedId];
                 });
               },
             })}

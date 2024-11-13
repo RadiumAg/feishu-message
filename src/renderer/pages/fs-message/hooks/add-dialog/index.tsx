@@ -1,6 +1,15 @@
 import React from 'react';
 import { DeleteFilled, LinkOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, message, Modal, Spin } from 'antd';
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  message,
+  Modal,
+  Segmented,
+  Spin,
+} from 'antd';
 import { useMount } from 'ahooks';
 import Styles from './index.module.scss';
 import { FormValue } from '../../../../../utils/type';
@@ -9,10 +18,20 @@ type Config = {
   afterClose?: (value: FormValue) => void;
 };
 
+const sendConfigFormListName = 'sendConfigArray';
+const tgConfigFormListName = 'tgConfigArray';
+
+enum ConfigList {
+  '飞书' = '飞书',
+  'Telegram' = 'Telegram',
+}
+
 const useAddDialog = (config: Config) => {
   const [form] = Form.useForm();
+  const [showConfig, setShowConfig] = React.useState<ConfigList>(
+    ConfigList.飞书,
+  );
   const [messageApi, contextHolder] = message.useMessage();
-  const sendConfigFormListName = 'sendConfigArray';
   const { afterClose } = config;
   const setConfig = React.useRef<{
     isSendConfig: boolean;
@@ -105,88 +124,157 @@ const useAddDialog = (config: Config) => {
             <LinkOutlined size={40} />
           </div>
 
-          <Form.List name={sendConfigFormListName}>
-            {(fields, { add, remove }) => {
-              return (
-                <>
-                  {fields.map((field) => {
-                    return (
-                      <Card
-                        key={field.name}
-                        size="small"
-                        title={
-                          <div className={Styles.cardTitle}>
-                            {`sendConfig ${field.name + 1}`}
-                            <Button
-                              icon={<DeleteFilled />}
-                              type="text"
-                              onClick={() => {
-                                remove(field.name);
-                              }}
-                            />
-                          </div>
-                        }
-                        className={Styles.sendConfigCard}
-                      >
-                        <Form.Item
-                          name={[field.name, 'chatName']}
-                          rules={[{ required: true }]}
-                          label="chatName"
-                        >
-                          <Input />
-                        </Form.Item>
-
-                        <Form.Item
-                          rules={[{ required: true }]}
-                          label="appId"
-                          name={[field.name, 'appId']}
-                        >
-                          <Input />
-                        </Form.Item>
-
-                        <Form.Item
-                          rules={[{ required: true }]}
-                          label="appSecret"
-                          name={[field.name, 'appSecret']}
-                        >
-                          <Input />
-                        </Form.Item>
-
-                        <Form.Item
-                          name={[field.name, 'chatId']}
-                          rules={[{ required: true }]}
-                          label="chatId"
-                        >
-                          <Input
-                            suffix={
-                              <Button
-                                type="primary"
-                                onClick={() => {
-                                  handleGetChatId(
-                                    form.getFieldValue(sendConfigFormListName)[
-                                      field.name
-                                    ],
-                                    [field.name, 'chatId'],
-                                    true,
-                                  );
-                                }}
-                              >
-                                获取
-                              </Button>
-                            }
-                          />
-                        </Form.Item>
-                      </Card>
-                    );
-                  })}
-
-                  <Button type="dashed" onClick={() => add()} block>
-                    添加发送配置
-                  </Button>
-                </>
-              );
+          <Segmented<ConfigList>
+            options={Object.values(ConfigList)}
+            onChange={(value) => {
+              setShowConfig(value);
             }}
-          </Form.List>
+          />
+
+          <div
+            style={{
+              display: showConfig === ConfigList.飞书 ? 'block' : 'none',
+            }}
+          >
+            <Form.List name={sendConfigFormListName}>
+              {(fields, { add, remove }) => {
+                return (
+                  <>
+                    {fields.map((field) => {
+                      return (
+                        <Card
+                          key={field.name}
+                          size="small"
+                          title={
+                            <div className={Styles.cardTitle}>
+                              {`sendConfig ${field.name + 1}`}
+                              <Button
+                                icon={<DeleteFilled />}
+                                type="text"
+                                onClick={() => {
+                                  remove(field.name);
+                                }}
+                              />
+                            </div>
+                          }
+                          className={Styles.sendConfigCard}
+                        >
+                          <Form.Item
+                            name={[field.name, 'chatName']}
+                            rules={[{ required: true }]}
+                            label="chatName"
+                          >
+                            <Input />
+                          </Form.Item>
+
+                          <Form.Item
+                            rules={[{ required: true }]}
+                            label="appId"
+                            name={[field.name, 'appId']}
+                          >
+                            <Input />
+                          </Form.Item>
+
+                          <Form.Item
+                            rules={[{ required: true }]}
+                            label="appSecret"
+                            name={[field.name, 'appSecret']}
+                          >
+                            <Input />
+                          </Form.Item>
+
+                          <Form.Item
+                            name={[field.name, 'chatId']}
+                            rules={[{ required: true }]}
+                            label="chatId"
+                          >
+                            <Input
+                              suffix={
+                                <Button
+                                  type="primary"
+                                  onClick={() => {
+                                    handleGetChatId(
+                                      form.getFieldValue(
+                                        sendConfigFormListName,
+                                      )[field.name],
+                                      [field.name, 'chatId'],
+                                      true,
+                                    );
+                                  }}
+                                >
+                                  获取
+                                </Button>
+                              }
+                            />
+                          </Form.Item>
+                        </Card>
+                      );
+                    })}
+
+                    <Button type="dashed" onClick={() => add()} block>
+                      添加发送配置
+                    </Button>
+                  </>
+                );
+              }}
+            </Form.List>
+          </div>
+
+          <div
+            style={{
+              display: showConfig === ConfigList.Telegram ? 'block' : '',
+            }}
+          >
+            <Form.List name={tgConfigFormListName}>
+              {(fields, { add, remove }) => {
+                return (
+                  <>
+                    {fields.map((field) => {
+                      return (
+                        <Card
+                          key={field.name}
+                          size="small"
+                          title={
+                            <div className={Styles.cardTitle}>
+                              {`sendConfig ${field.name + 1}`}
+                              <Button
+                                icon={<DeleteFilled />}
+                                type="text"
+                                onClick={() => {
+                                  remove(field.name);
+                                }}
+                              />
+                            </div>
+                          }
+                          className={Styles.sendConfigCard}
+                        >
+                          <Form.Item
+                            name={[field.name, 'botName']}
+                            rules={[{ required: true }]}
+                            label="botName"
+                          >
+                            <Input />
+                          </Form.Item>
+
+                          <Form.Item
+                            rules={[{ required: true }]}
+                            label="topicName"
+                            name={[field.name, 'topicName']}
+                          >
+                            <Input />
+                          </Form.Item>
+                        </Card>
+                      );
+                    })}
+
+                    <Button type="dashed" onClick={() => add()} block>
+                      添加发送配置
+                    </Button>
+                  </>
+                );
+              }}
+            </Form.List>
+          </div>
         </Form>
       </div>
       <Spin fullscreen spinning={isLoading} />
