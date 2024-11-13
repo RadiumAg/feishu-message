@@ -5,6 +5,7 @@ import log from 'electron-log';
 import { ImageMessage, RichDocMessage, TextMessage } from './type';
 import { globalConfig } from '../config';
 import { createBase64ToFile } from './file';
+import { sendMessage } from '../api/tg-api';
 
 const listenMessageEventName = 'listenMessage';
 
@@ -44,7 +45,8 @@ const getImageKey = async (url: string, page: Page) => {
 /**
  * 监听消息列表
  *
- * @param {Page} page
+ * @param {Page} page 监听群页面对象
+ * @param {ListenChatGroupConfig} config // 群配置
  */
 const evaluateListenMessaggee = async (
   page: Page,
@@ -55,14 +57,33 @@ const evaluateListenMessaggee = async (
   await page.exposeFunction(
     listenMessageEventName,
     async (message: RichDocMessage) => {
-      for (const content of message.content
+      const richMessageArray = message.content
         .flat()
-        .filter((msg) => msg.tag === 'img')) {
+        .filter((msg) => msg.tag === 'img');
+
+      for (const content of richMessageArray) {
         content.image_key = await getImageKey(content.image_key, page);
       }
+      const { tgSendConfigArray } = config;
+
+      if (tgSendConfigArray == null || tgSendConfigArray.length === 0) return;
 
       // TODO feishu
       // sendMessage(config.linkSendConfigArray, message);
+
+      for (const tsSendConfig of tgSendConfigArray) {
+        sendMessage({
+          bot_name: tsSendConfig.botName,
+          topic_name: tsSendConfig.topicName,
+          message_text: message.content
+            .map((msg) => {
+              return msg.filter((_) => _.tag === 'text');
+            })
+            .flat()
+            .map((msg) => msg.text)
+            .join('\n'),
+        });
+      }
     },
   );
 

@@ -7,11 +7,18 @@ type SendChatGroupConfig = {
   receiveId?: string;
 };
 
+type TGSendConfigArray = {
+  botName: string;
+  topicName: string;
+  messageText: string;
+};
+
 type ListenChatGroupConfig = {
   feedId: string;
   chatName: string;
   userName?: string;
-  linkSendConfigArray: SendChatGroupConfig[];
+  tgSendConfigArray?: TGSendConfigArray[]; // telegram配置
+  linkSendConfigArray?: SendChatGroupConfig[];
 };
 
 declare module '@larksuiteoapi/node-sdk' {
