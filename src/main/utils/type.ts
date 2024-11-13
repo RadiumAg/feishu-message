@@ -4,4 +4,11 @@ type RichDocMessage = {
   title: string;
   content: (TextMessage | ImageMessage)[][];
 };
-export type { ImageMessage, TextMessage, RichDocMessage };
+
+type FeiShuResponse<T> = {
+  data: T;
+  msg: string;
+  code: number;
+};
+
+export type { ImageMessage, TextMessage, RichDocMessage, FeiShuResponse };

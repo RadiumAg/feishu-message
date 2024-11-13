@@ -1,22 +1,19 @@
 import axios from 'axios';
+import { FeiShuResponse } from '../utils/type';
 
-const images = async (image: any) => {
+const images = async (image: File) => {
+  const formData = new FormData();
+
+  formData.append('image', image);
+  formData.append('image_type', 'message');
+
   return axios
-    .post<{
-      code: number;
-      data: {
-        image_key: string;
-      };
-      msg: string;
-    }>(
+    .post<FeiShuResponse<{ image_key: string }>>(
       'https://open.feishu.cn/open-apis/im/v1/images',
-      {
-        image_type: 'message',
-        image,
-      },
+      formData,
       {
         headers: {
-          Authorization: 'Bearer t-g104bbknYG23BZW75B5QIJIP2U52LBCTDUHSVBE4',
+          Authorization: 'Bearer t-g104bdcN4FXNWJFIXSHVHMIJVK2ZTG5HN5TVMPGP',
           'Content-Type': 'multipart/form-data; boundary=---7MA4YWxkTrZu0gW',
         },
       },

@@ -28,7 +28,7 @@ ipcMain.on('set-config', (event, globalConfig: string) => {
 
   const updateData = listenChatGroupConfigArray.map<FormValue>(
     (listenConfig) => {
-      const sendConfig = listenConfig.linkSendConfigArray.map(
+      const sendConfig = listenConfig.linkSendConfigArray?.map(
         (sendConfigValue) => ({
           appId: sendConfigValue.appId,
           chatId: sendConfigValue.receiveId,

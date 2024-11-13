@@ -37,7 +37,7 @@ const useAddDialog = (config: Config) => {
   };
 
   useMount(() => {
-    form.setFieldValue('feedId', '7433401383485063169');
+    form.setFieldValue('feedId', '7433435421348003868');
   });
 
   const handleGetChatId = (

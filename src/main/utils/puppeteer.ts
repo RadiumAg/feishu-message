@@ -5,30 +5,42 @@ import * as Lark from '@larksuiteoapi/node-sdk';
 import { sendMessage } from './message';
 import { ImageMessage, RichDocMessage, TextMessage } from './type';
 import { globalConfig } from '../config';
-import { images } from './api';
+import { images } from '../api/fy-api';
+import { createBase64ToFile } from './file';
 
 const listenMessageEventName = 'listenMessage';
 
 type MessageType = 'text-only' | 'rich-message' | 'image-only';
 
 const getImageKey = async (url: string, page: Page) => {
-  const { imageData, type } = (await page.evaluate(async (blobUrl) => {
-    const response = await fetch(blobUrl);
-    const blob = await response.blob();
-    const reader = new FileReader();
-    return new Promise((resolve) => {
-      reader.onloadend = () => {
-        resolve({ imageData: reader.result, type: blob.type });
-      };
-      reader.readAsDataURL(blob);
-    });
-  }, url)) as { imageData: string; type: string };
+  try {
+    const { imageData, type } = (await page.evaluate(async (blobUrl) => {
+      console.log('download url', blobUrl);
 
-  // 将 Base64 编码的字符串转换为 Buffer 对象
-  const buffer = Buffer.from(imageData, 'base64');
-  const file = new File([buffer], `filename.${type}`, { type: 'text/plain' });
-  const image = await images(file);
-  return image.data.image_key;
+      const response = await fetch(blobUrl);
+      const blob = await response.blob();
+      const reader = new FileReader();
+      return new Promise((resolve) => {
+        reader.onloadend = () => {
+          resolve({ imageData: reader.result, type: blob.type });
+        };
+        reader.readAsDataURL(blob);
+      });
+    }, url)) as { imageData: string; type: string };
+
+    // 将 Base64 编码的字符串转换为 Buffer 对象
+    const file = createBase64ToFile(
+      imageData,
+      type,
+      `upload-img.${type.split('/')[1]}`,
+    );
+
+    return '';
+    // const image = await images(file);
+  } catch (e) {
+    console.error(e);
+    return '';
+  }
 };
 
 /**
@@ -77,10 +89,17 @@ const evaluateListenMessaggee = async (
       return undefined;
     };
 
-    const createMessageObject = (
+    /**
+     *  创建消息对象
+     *
+     * @param {HTMLElement} message
+     * @param {MessageType} type
+     * @return {*}  {((ImageMessage | TextMessage)[])}
+     */
+    const createMessageObject = async (
       message: HTMLElement,
       type: MessageType,
-    ): (ImageMessage | TextMessage)[] => {
+    ): Promise<(ImageMessage | TextMessage)[]> => {
       if (type === 'text-only') {
         const textElementObject: TextMessage = {
           text: '',
@@ -108,17 +127,36 @@ const evaluateListenMessaggee = async (
 
           return textRecord;
         }
+        // img need wait to load
         if (message.classList.contains('rich-text-image')) {
-          const imgRecord = [];
+          const imgRecord: ImageMessage[] = [];
+          const allImagSourcePromise: Promise<void>[] = [];
           const imageMessageArray = message.querySelectorAll('img');
 
           for (let index = 0; index < imageMessageArray.length; index += 1) {
             const element = imageMessageArray.item(index);
-            imgRecord.push({
-              tag: 'img',
-              image_key: element?.src,
-            } as ImageMessage);
+
+            allImagSourcePromise.push(
+              new Promise((resolve) => {
+                element.onload = () => {
+                  console.log('img src', element?.src);
+
+                  imgRecord.push({
+                    tag: 'img',
+                    image_key: element?.src,
+                  } as ImageMessage);
+
+                  resolve();
+                };
+
+                element.onerror = () => {
+                  resolve();
+                };
+              }),
+            );
           }
+
+          await Promise.all(allImagSourcePromise);
 
           return imgRecord;
         }
@@ -126,7 +164,7 @@ const evaluateListenMessaggee = async (
       return [];
     };
 
-    const mutationObserver = new MutationObserver((mutationsList) => {
+    const mutationObserver = new MutationObserver(async (mutationsList) => {
       const addedNodes: Node[] = [];
 
       mutationsList.forEach((mutation) => {
@@ -171,7 +209,7 @@ const evaluateListenMessaggee = async (
                 const element = childrenElementList.item(index);
                 if (element == null) return;
 
-                const contentItem = createMessageObject(
+                const contentItem = await createMessageObject(
                   element as HTMLElement,
                   'rich-message',
                 );
@@ -204,7 +242,7 @@ const evaluateListenMessaggee = async (
                 const element = childrenElementList.item(index);
                 if (element == null) return;
 
-                const contentItem = createMessageObject(
+                const contentItem = await createMessageObject(
                   element as HTMLElement,
                   'text-only',
                 );
