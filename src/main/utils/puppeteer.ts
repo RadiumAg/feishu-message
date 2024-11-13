@@ -2,7 +2,7 @@
 /* eslint-disable no-restricted-syntax */
 import puppeteer, { Page } from 'puppeteer';
 import * as Lark from '@larksuiteoapi/node-sdk';
-import { sendMessage } from './message';
+import { sendMessage } from './fy-message';
 import { ImageMessage, RichDocMessage, TextMessage } from './type';
 import { globalConfig } from '../config';
 import { images } from '../api/fy-api';
@@ -63,7 +63,8 @@ const evaluateListenMessaggee = async (
         content.image_key = await getImageKey(content.image_key, page);
       }
 
-      sendMessage(config.linkSendConfigArray, message);
+      // TODO feishu
+      // sendMessage(config.linkSendConfigArray, message);
     },
   );
 

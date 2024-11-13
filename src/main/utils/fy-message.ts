@@ -23,19 +23,18 @@ const sendMessage = (
       }),
     );
 
-    // TOTO: 转发飞书
-    // sendClient?.im.message.create({
-    //   data: {
-    //     msg_type: 'post',
-    //     receive_id: sendConfig.receiveId,
-    //     content: JSON.stringify({
-    //       zh_cn: message,
-    //     }),
-    //   },
-    //   params: {
-    //     receive_id_type: 'chat_id',
-    //   },
-    // });
+    sendClient?.im.message.create({
+      data: {
+        msg_type: 'post',
+        receive_id: sendConfig.receiveId,
+        content: JSON.stringify({
+          zh_cn: message,
+        }),
+      },
+      params: {
+        receive_id_type: 'chat_id',
+      },
+    });
   });
 };
 
