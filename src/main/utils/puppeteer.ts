@@ -1,11 +1,9 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 import puppeteer, { Page } from 'puppeteer';
-import * as Lark from '@larksuiteoapi/node-sdk';
-import { sendMessage } from './fy-message';
+import log from 'electron-log';
 import { ImageMessage, RichDocMessage, TextMessage } from './type';
 import { globalConfig } from '../config';
-import { images } from '../api/fy-api';
 import { createBase64ToFile } from './file';
 
 const listenMessageEventName = 'listenMessage';
@@ -38,7 +36,7 @@ const getImageKey = async (url: string, page: Page) => {
     return '';
     // const image = await images(file);
   } catch (e) {
-    console.error(e);
+    log.error('getImgError', JSON.stringify(e));
     return '';
   }
 };
@@ -82,9 +80,7 @@ const evaluateListenMessaggee = async (
      */
     const getMessageType = (message: HTMLElement): MessageType | undefined => {
       if (message.classList.contains('richTextDocs')) return 'rich-message';
-
       if (message.classList.contains('text-only')) return 'text-only';
-
       if (message.classList.contains('img-container')) return 'image-only';
 
       return undefined;
@@ -141,12 +137,10 @@ const evaluateListenMessaggee = async (
               new Promise((resolve) => {
                 element.onload = () => {
                   console.log('img src', element?.src);
-
                   imgRecord.push({
                     tag: 'img',
                     image_key: element?.src,
                   } as ImageMessage);
-
                   resolve();
                 };
 

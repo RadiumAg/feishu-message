@@ -1,4 +1,5 @@
 import * as Lark from '@larksuiteoapi/node-sdk';
+import log from 'electron-log';
 import { RichDocMessage } from './type';
 
 /**
@@ -17,7 +18,7 @@ const sendMessage = (
     });
 
     if (sendConfig.receiveId == null) return;
-    console.log(
+    log.info(
       JSON.stringify({
         zh_cn: message,
       }),
