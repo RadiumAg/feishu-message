@@ -1,0 +1,3 @@
+const sendMesage = () => {};
+
+export { sendMesage };
