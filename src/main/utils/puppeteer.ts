@@ -298,14 +298,15 @@ const evaluateListenMessaggee = async (
 // eslint-disable-next-line no-undef
 const runPuppeteer = async () => {
   const { listenChatGroupConfigArray } = await getConfig();
-  const browser = await puppeteer.launch({
-    headless: false,
-    devtools: true,
-    defaultViewport: null,
-    args: ['--remote-debugging-port=9222'],
-  });
 
   for (const config of listenChatGroupConfigArray) {
+    const browser = await puppeteer.launch({
+      headless: false,
+      devtools: true,
+      defaultViewport: null,
+      args: ['--remote-debugging-port=9222'],
+    });
+
     try {
       const page = await browser.newPage();
       await page.goto('https://ezeb4r28vm.feishu.cn/next/messenger');
