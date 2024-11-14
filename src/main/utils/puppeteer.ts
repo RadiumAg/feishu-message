@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
-import puppeteer, { Page } from 'puppeteer';
+import puppeteer, { Browser, Page } from 'puppeteer';
 import ElectronLog from 'electron-log';
 import { ImageMessage, RichDocMessage, TextMessage } from './type';
 import { createBase64ToFile } from './file';
@@ -52,6 +52,7 @@ const evaluateListenMessaggee = async (
   page: Page,
   // eslint-disable-next-line no-undef
   config: ListenChatGroupConfig,
+  browser: Browser,
 ) => {
   // 使用page.exposeFunction()监听浏览器向nodejs发送事件回调
   await page.exposeFunction(
@@ -298,23 +299,43 @@ const evaluateListenMessaggee = async (
 // eslint-disable-next-line no-undef
 const runPuppeteer = async () => {
   const { listenChatGroupConfigArray } = await getConfig();
+  const browser = await puppeteer.launch({
+    headless: false,
+    // devtools: true,
+    defaultViewport: null,
+    args: ['--remote-debugging-port=9222'],
+  });
 
   for (const config of listenChatGroupConfigArray) {
-    const browser = await puppeteer.launch({
-      headless: false,
-      devtools: true,
-      defaultViewport: null,
-      args: ['--remote-debugging-port=9222'],
-    });
-
     try {
       const page = await browser.newPage();
       await page.goto('https://ezeb4r28vm.feishu.cn/next/messenger');
+
+      await page.waitForSelector('.list_items');
+
+      await page.evaluateHandle(() => {
+        const tagItem = document.querySelector('.list_items');
+        const children = tagItem?.children;
+
+        if (children == null) return;
+
+        for (let index = 0; index < children?.length; index += 1) {
+          const tagElement = children.item(index);
+          if (tagElement?.textContent === '标签') {
+            (tagElement as HTMLElement).click();
+          }
+        }
+
+        return;
+      });
+
+      await page.locator('.tag-filter-item-7432720777247621124').click();
+
       await page
         .locator(`[data-feed-id="${config.feedId}"] .a11y_feed_card_item`)
         .click();
 
-      await evaluateListenMessaggee(page, config);
+      await evaluateListenMessaggee(page, config, browser);
     } catch (error) {
       ElectronLog.error('openPageError', JSON.stringify(error));
     }

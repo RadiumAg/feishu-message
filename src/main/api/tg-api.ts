@@ -1,4 +1,5 @@
 import axios from 'axios';
+import ElectronLog from 'electron-log';
 
 type SendMessageData = {
   bot_name: string;
@@ -13,7 +14,11 @@ const axiosInstance = axios.create({
 const sendMessage = (data: SendMessageData) => {
   return axiosInstance
     .post<void>('/send_message', data)
-    .then((res) => res.data);
+    .then((res) => res.data)
+    .catch((e) => {
+      ElectronLog.log(e);
+      console.error(e);
+    });
 };
 
 export { sendMessage };
