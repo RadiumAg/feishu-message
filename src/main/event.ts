@@ -1,24 +1,33 @@
 import { ipcMain } from 'electron';
 import * as Lark from '@larksuiteoapi/node-sdk';
-import { setConfig } from './config';
+import { GlobalConfig, setConfig } from './config';
 import { FormValue } from '../utils/type';
 import { runPuppeteer } from './utils/puppeteer';
 
 ipcMain.on('set-config', (event, globalConfig: string) => {
   const config = JSON.parse(globalConfig) as FormValue[];
 
-  const listenChatGroupConfigArray = config.map((configValue) => {
+  const listenChatGroupConfigArray = config.map<
+    GlobalConfig['listenChatGroupConfigArray'][number]
+  >((configValue) => {
     return {
       chatName: configValue.chatName,
       feedId: configValue.feedId,
 
-      linkSendConfigArray: configValue.sendConfigArray?.map((sendConfig) => {
+      fsSendConfigArray: configValue.fsSendConfigArray?.map((sendConfig) => {
         return {
           appId: sendConfig.appId,
           chatId: sendConfig.chatId,
           chatName: sendConfig.chatName,
           receiveId: sendConfig.chatId,
           appSecret: sendConfig.appSecret,
+        };
+      }),
+
+      tgSendConfigArray: configValue.tgSendConfigArray?.map((sendConfig) => {
+        return {
+          botName: sendConfig.botName,
+          topicName: sendConfig.topicName,
         };
       }),
     };
@@ -28,19 +37,25 @@ ipcMain.on('set-config', (event, globalConfig: string) => {
 
   const updateData = listenChatGroupConfigArray.map<FormValue>(
     (listenConfig) => {
-      const sendConfig = listenConfig.linkSendConfigArray?.map(
-        (sendConfigValue) => ({
+      const fsConfig =
+        listenConfig.fsSendConfigArray?.map((sendConfigValue) => ({
           appId: sendConfigValue.appId,
           chatId: sendConfigValue.receiveId,
           appSecret: sendConfigValue.appSecret,
           chatName: sendConfigValue.chatName,
-        }),
-      );
+        })) || [];
+
+      const tgConfig =
+        listenConfig.tgSendConfigArray?.map((tgConfigValue) => ({
+          botName: tgConfigValue.botName,
+          topicName: tgConfigValue.topicName,
+        })) || [];
 
       return {
         feedId: listenConfig.feedId,
         chatName: listenConfig.chatName,
-        sendConfigArray: sendConfig,
+        fsSendConfigArray: fsConfig,
+        tgSendConfigArray: tgConfig,
       };
     },
   );

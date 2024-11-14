@@ -28,4 +28,9 @@
     column-gap: 16px;
     flex-grow: 1;
   }
+
+  .tableSwitch {
+    display: flex;
+    justify-content: space-between;
+  }
 }

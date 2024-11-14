@@ -1,16 +1,15 @@
 // eslint-disable-next-line max-classes-per-file
-type SendChatGroupConfig = {
+type FSSendConfig = {
   appId: string;
   chatId: string;
   chatName: string;
   appSecret: string;
-  receiveId?: string;
+  receiveId: string;
 };
 
 type TGSendConfigArray = {
   botName: string;
   topicName: string;
-  messageText: string;
 };
 
 type ListenChatGroupConfig = {
@@ -18,7 +17,7 @@ type ListenChatGroupConfig = {
   chatName: string;
   userName?: string;
   tgSendConfigArray?: TGSendConfigArray[]; // telegram配置
-  linkSendConfigArray?: SendChatGroupConfig[];
+  fsSendConfigArray?: FSSendConfig[];
 };
 
 declare module '@larksuiteoapi/node-sdk' {
@@ -30,7 +29,7 @@ declare module '@larksuiteoapi/node-sdk' {
   }
 
   class Client extends Lark.Client {
-    config: SendChatGroupConfig;
+    config: FSSendConfig;
   }
 
   export { WSClient, Client };

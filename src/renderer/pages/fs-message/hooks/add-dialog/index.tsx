@@ -18,8 +18,8 @@ type Config = {
   afterClose?: (value: FormValue) => void;
 };
 
-const sendConfigFormListName = 'sendConfigArray';
-const tgConfigFormListName = 'tgConfigArray';
+const fsConfigFormListName = 'fsSendConfigArray';
+const tgConfigFormListName = 'tgSendConfigArray';
 
 enum ConfigList {
   '飞书' = '飞书',
@@ -86,7 +86,7 @@ const useAddDialog = (config: Config) => {
 
       if (setConfig.current.isSendConfig && setConfig.current.name) {
         form.setFieldValue(
-          [sendConfigFormListName, ...setConfig.current.name],
+          [fsConfigFormListName, ...setConfig.current.name],
           chatId,
         );
       } else {
@@ -124,19 +124,21 @@ const useAddDialog = (config: Config) => {
             <LinkOutlined size={40} />
           </div>
 
-          <Segmented<ConfigList>
-            options={Object.values(ConfigList)}
-            onChange={(value) => {
-              setShowConfig(value);
-            }}
-          />
+          <div className={Styles.switch}>
+            <Segmented<ConfigList>
+              options={Object.values(ConfigList)}
+              onChange={(value) => {
+                setShowConfig(value);
+              }}
+            />
+          </div>
 
           <div
             style={{
-              display: showConfig === ConfigList.飞书 ? 'block' : 'none',
+              display: showConfig === ConfigList.飞书 ? 'unset' : 'none',
             }}
           >
-            <Form.List name={sendConfigFormListName}>
+            <Form.List name={fsConfigFormListName}>
               {(fields, { add, remove }) => {
                 return (
                   <>
@@ -194,9 +196,9 @@ const useAddDialog = (config: Config) => {
                                   type="primary"
                                   onClick={() => {
                                     handleGetChatId(
-                                      form.getFieldValue(
-                                        sendConfigFormListName,
-                                      )[field.name],
+                                      form.getFieldValue(fsConfigFormListName)[
+                                        field.name
+                                      ],
                                       [field.name, 'chatId'],
                                       true,
                                     );
@@ -222,7 +224,7 @@ const useAddDialog = (config: Config) => {
 
           <div
             style={{
-              display: showConfig === ConfigList.Telegram ? 'block' : '',
+              display: showConfig === ConfigList.Telegram ? 'unset' : 'none',
             }}
           >
             <Form.List name={tgConfigFormListName}>

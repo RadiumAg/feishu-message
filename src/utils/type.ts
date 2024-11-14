@@ -1,12 +1,15 @@
 type FormValue = {
   feedId: string;
   chatName: string;
-
-  sendConfigArray: {
+  fsSendConfigArray: {
     appId: string;
     appSecret: string;
     chatId: string;
     chatName: string;
+  }[];
+  tgSendConfigArray: {
+    botName: string;
+    topicName: string;
   }[];
 };
 
