@@ -3,7 +3,7 @@
 import puppeteer, { Page } from 'puppeteer';
 import log from 'electron-log';
 import { ImageMessage, RichDocMessage, TextMessage } from './type';
-import { globalConfig } from '../config';
+import { globalConfig } from './config';
 import { createBase64ToFile } from './file';
 import { sendMessage } from '../api/tg-api';
 

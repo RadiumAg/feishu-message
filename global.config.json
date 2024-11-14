@@ -1,0 +1,7 @@
+{
+  "feedId": "",
+  "chatName": "",
+  "userName": "",
+  "tgSendConfigArray": [{ "botName": "", "topicName": "" }],
+  "fsSendConfigArray": [{ "appId": "", "chatId": "" }]
+}

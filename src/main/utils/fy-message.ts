@@ -8,10 +8,10 @@ import { RichDocMessage } from './type';
  */
 const sendMessage = (
   // eslint-disable-next-line no-undef
-  sendConfigArray: ListenChatGroupConfig['linkSendConfigArray'],
+  sendConfigArray: ListenChatGroupConfig['fsSendConfigArray'],
   message: RichDocMessage,
 ) => {
-  sendConfigArray.forEach((sendConfig) => {
+  sendConfigArray?.forEach((sendConfig) => {
     const sendClient = new Lark.Client({
       appId: sendConfig.appId,
       appSecret: sendConfig.appSecret,

@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import * as Lark from '@larksuiteoapi/node-sdk';
-import { GlobalConfig, setConfig } from './config';
+import { GlobalConfig, setConfig } from './utils/config';
 import { FormValue } from '../utils/type';
 import { runPuppeteer } from './utils/puppeteer';
 
