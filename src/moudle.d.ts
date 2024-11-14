@@ -13,6 +13,7 @@ type TGSendConfigArray = {
 };
 
 type ListenChatGroupConfig = {
+  id: string;
   feedId: string;
   chatName: string;
   userName?: string;

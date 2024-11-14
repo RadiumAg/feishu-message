@@ -33,14 +33,10 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
           JSON.stringify([...leftTableData, form]),
         );
       } else if (formType === 'edit') {
-        const targetRecord = leftTableData.find(
-          (data) => data.feedId === form.feedId,
-        );
-
+        const targetRecord = leftTableData.find((data) => data.id === form.id);
         if (targetRecord == null) return;
 
         Object.assign(targetRecord, form);
-
         window.electron.ipcRenderer.sendMessage(
           'set-config',
           JSON.stringify(leftTableData),
@@ -56,6 +52,19 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
 
   const handleOpenPuppeteer = () => {
     window.electron.ipcRenderer.sendMessage('start-puppeteer');
+  };
+
+  const handleDeleteConfig = (record: FormValue) => {
+    setLeftTableData((oldData) => {
+      const newData = oldData.filter((item) => item.id !== record.id);
+
+      window.electron.ipcRenderer.sendMessage(
+        'set-config',
+        JSON.stringify(newData),
+      );
+
+      return newData;
+    });
   };
 
   React.useEffect(() => {
@@ -109,7 +118,7 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
       <div className={Styles.tableWrapper} ref={setWrapperRef}>
         <Card className={Styles.leftTable} title="监听群配置">
           <Table
-            rowKey={(record) => record.feedId}
+            rowKey={(record) => record.id}
             rowSelection={{
               type: 'radio',
               selectedRowKeys: selectionKeys,
@@ -118,12 +127,12 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
             onRow={(record) => ({
               onClick: () => {
                 setSelectKeys((value) => {
-                  if (value[0] === record.feedId) {
+                  if (value[0] === record.id) {
                     return [];
                   }
 
                   handleChange(record);
-                  return [record.feedId];
+                  return [record.id];
                 });
               },
             })}
@@ -143,14 +152,24 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
             <Table.Column
               key="chatName"
               render={(record) => (
-                <Button
-                  type="text"
-                  onClick={() => {
-                    toggleDialog(record);
-                  }}
-                >
-                  编辑
-                </Button>
+                <>
+                  <Button
+                    type="text"
+                    onClick={() => {
+                      toggleDialog(record);
+                    }}
+                  >
+                    编辑
+                  </Button>
+                  <Button
+                    type="text"
+                    onClick={() => {
+                      handleDeleteConfig(record);
+                    }}
+                  >
+                    删除
+                  </Button>
+                </>
               )}
             />
           </Table>

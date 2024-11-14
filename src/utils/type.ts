@@ -1,4 +1,5 @@
 type FormValue = {
+  id: string;
   feedId: string;
   chatName: string;
   fsSendConfigArray: {

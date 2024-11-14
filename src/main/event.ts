@@ -17,9 +17,9 @@ ipcMain.on('set-config', async (event, globalConfig: string) => {
     GlobalConfig['listenChatGroupConfigArray'][number]
   >((configValue) => {
     return {
+      id: configValue.id,
       chatName: configValue.chatName,
       feedId: configValue.feedId,
-
       fsSendConfigArray: configValue.fsSendConfigArray?.map((sendConfig) => {
         return {
           appId: sendConfig.appId,

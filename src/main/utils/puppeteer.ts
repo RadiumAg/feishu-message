@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 import puppeteer, { Page } from 'puppeteer';
-import log from 'electron-log';
+import ElectronLog from 'electron-log';
 import { ImageMessage, RichDocMessage, TextMessage } from './type';
 import { createBase64ToFile } from './file';
 import { sendMessage } from '../api/tg-api';
@@ -37,7 +37,7 @@ const getImageKey = async (url: string, page: Page) => {
     return '';
     // const image = await images(file);
   } catch (e) {
-    log.error('getImgError', JSON.stringify(e));
+    ElectronLog.error('getImgError', JSON.stringify(e));
     return '';
   }
 };
@@ -306,13 +306,17 @@ const runPuppeteer = async () => {
   });
 
   for (const config of listenChatGroupConfigArray) {
-    const page = await browser.newPage();
-    await page.goto('https://ezeb4r28vm.feishu.cn/next/messenger');
-    await page
-      .locator(`[data-feed-id="${config.feedId}"] .a11y_feed_card_item`)
-      .click();
+    try {
+      const page = await browser.newPage();
+      await page.goto('https://ezeb4r28vm.feishu.cn/next/messenger');
+      await page
+        .locator(`[data-feed-id="${config.feedId}"] .a11y_feed_card_item`)
+        .click();
 
-    await evaluateListenMessaggee(page, config);
+      await evaluateListenMessaggee(page, config);
+    } catch (error) {
+      ElectronLog.error('openPageError', JSON.stringify(error));
+    }
   }
 };
 

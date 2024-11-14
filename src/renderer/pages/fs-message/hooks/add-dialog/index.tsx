@@ -13,6 +13,7 @@ import {
 import { useMount } from 'ahooks';
 import Styles from './index.module.scss';
 import { FormValue } from '../../../../../utils/type';
+import { generatorId } from '../../../../../utils/value';
 
 type FormType = 'create' | 'edit';
 type Config = {
@@ -49,9 +50,12 @@ const useAddDialog = (config: Config) => {
     try {
       await form.validateFields();
       setIsModalOpen(false);
-      console.log('form.getFieldsValue()', form.getFieldsValue());
-      afterClose?.(form.getFieldsValue(), formType.current);
+      const formValue = form.getFieldsValue();
+      if (formType.current === 'create') formValue.id = generatorId();
+      afterClose?.(formValue, formType.current);
       form.resetFields();
+      setShowConfig(ConfigList.飞书);
+      console.log('form.getFieldsValue()', formValue);
     } catch (e) {
       console.error(e);
     }
@@ -106,6 +110,8 @@ const useAddDialog = (config: Config) => {
       {contextHolder}
       <div className={Styles.formWrapper}>
         <Form form={form} style={{ maxWidth: 580 }} labelCol={{ span: 6 }}>
+          <Form.Item name="id" noStyle />
+
           <Form.Item
             name="chatName"
             rules={[{ required: true }]}
@@ -285,7 +291,8 @@ const useAddDialog = (config: Config) => {
     element,
     (formData?: FormValue) => {
       formType.current = formData ? 'edit' : 'create';
-      form.setFieldsValue(formData);
+      console.log(formData);
+      if (formData) form.setFieldsValue(formData);
       setIsModalOpen(!isModalOpen);
     },
   ] as const;

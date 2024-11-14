@@ -58,6 +58,7 @@ const transformToFormValue = (config: GlobalConfig): FormValue[] => {
         })) || [];
 
       return {
+        id: listenConfig.id,
         feedId: listenConfig.feedId,
         chatName: listenConfig.chatName,
         fsSendConfigArray: fsConfig,
