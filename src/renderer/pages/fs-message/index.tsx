@@ -26,11 +26,26 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
     FormValue['tgSendConfigArray']
   >([]);
   const [element, toggleDialog] = useAddDialog({
-    afterClose(form) {
-      window.electron.ipcRenderer.sendMessage(
-        'set-config',
-        JSON.stringify([...leftTableData, form]),
-      );
+    afterClose(form, formType) {
+      if (formType === 'create') {
+        window.electron.ipcRenderer.sendMessage(
+          'set-config',
+          JSON.stringify([...leftTableData, form]),
+        );
+      } else if (formType === 'edit') {
+        const targetRecord = leftTableData.find(
+          (data) => data.feedId === form.feedId,
+        );
+
+        if (targetRecord == null) return;
+
+        Object.assign(targetRecord, form);
+
+        window.electron.ipcRenderer.sendMessage(
+          'set-config',
+          JSON.stringify(leftTableData),
+        );
+      }
     },
   });
 

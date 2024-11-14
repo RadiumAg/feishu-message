@@ -14,13 +14,13 @@ import { useMount } from 'ahooks';
 import Styles from './index.module.scss';
 import { FormValue } from '../../../../../utils/type';
 
+type FormType = 'create' | 'edit';
 type Config = {
-  afterClose?: (value: FormValue) => void;
+  afterClose?: (value: FormValue, type: FormType) => void;
 };
 
 const fsConfigFormListName = 'fsSendConfigArray';
 const tgConfigFormListName = 'tgSendConfigArray';
-type FormType = 'create' | 'edit';
 
 enum ConfigList {
   '飞书' = '飞书',
@@ -29,7 +29,7 @@ enum ConfigList {
 
 const useAddDialog = (config: Config) => {
   const [form] = Form.useForm();
-  const formType = React.useRef<FormType>();
+  const formType = React.useRef<FormType>('create');
   const [showConfig, setShowConfig] = React.useState<ConfigList>(
     ConfigList.飞书,
   );
@@ -50,7 +50,7 @@ const useAddDialog = (config: Config) => {
       await form.validateFields();
       setIsModalOpen(false);
       console.log('form.getFieldsValue()', form.getFieldsValue());
-      afterClose?.(form.getFieldsValue());
+      afterClose?.(form.getFieldsValue(), formType.current);
       form.resetFields();
     } catch (e) {
       console.error(e);
