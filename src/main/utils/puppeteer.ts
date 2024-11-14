@@ -303,7 +303,13 @@ const runPuppeteer = async () => {
     headless: false,
     // devtools: true,
     defaultViewport: null,
-    args: ['--remote-debugging-port=9222'],
+    args: [
+      '--remote-debugging-port=9222',
+      '--disable-gpu',
+      '--no-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-background-timer-throttling',
+    ],
   });
 
   for (const config of listenChatGroupConfigArray) {
