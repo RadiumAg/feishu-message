@@ -64,9 +64,18 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
 
   useMount(() => {
     window.electron.ipcRenderer.on('update-data', (data: string) => {
+      console.log(data);
       const formData = JSON.parse(data) as FormValue[];
       setLeftTableData(formData);
     });
+
+    window.electron.ipcRenderer.once('init-data', (data: string) => {
+      console.log('initData', data);
+      const formData = JSON.parse(data) as FormValue[];
+      setLeftTableData(formData);
+    });
+
+    window.electron.ipcRenderer.sendMessage('init-data');
   });
 
   return (

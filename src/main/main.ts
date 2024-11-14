@@ -15,7 +15,7 @@ import log from 'electron-log';
 import MenuBuilder from './menu';
 import './event';
 import { resolveHtmlPath } from './util';
-import { getConfig } from './utils/config';
+import { getConfig, initConfig } from './utils/config';
 
 class AppUpdater {
   constructor() {
@@ -137,6 +137,3 @@ app
     });
   })
   .catch(console.log);
-
-// initConfig
-getConfig();

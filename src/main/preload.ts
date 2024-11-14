@@ -7,7 +7,8 @@ export type Channels =
   | 'get-chat-id'
   | 'set-config'
   | 'update-data'
-  | 'start-puppeteer';
+  | 'start-puppeteer'
+  | 'init-data';
 
 const electronHandler = {
   ipcRenderer: {
@@ -23,7 +24,7 @@ const electronHandler = {
         ipcRenderer.removeListener(channel, subscription);
       };
     },
-    once(channel: Channels, func: (...args: unknown[]) => void) {
+    once(channel: Channels, func: (...args: any[]) => void) {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
   },

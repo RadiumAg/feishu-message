@@ -1,10 +1,16 @@
 import { ipcMain } from 'electron';
 import * as Lark from '@larksuiteoapi/node-sdk';
-import { GlobalConfig, setConfig } from './utils/config';
+import {
+  getConfig,
+  GlobalConfig,
+  initConfig,
+  setConfig,
+  transformToFormValue,
+} from './utils/config';
 import { FormValue } from '../utils/type';
 import { runPuppeteer } from './utils/puppeteer';
 
-ipcMain.on('set-config', (event, globalConfig: string) => {
+ipcMain.on('set-config', async (event, globalConfig: string) => {
   const config = JSON.parse(globalConfig) as FormValue[];
 
   const listenChatGroupConfigArray = config.map<
@@ -35,30 +41,7 @@ ipcMain.on('set-config', (event, globalConfig: string) => {
 
   setConfig({ listenChatGroupConfigArray });
 
-  const updateData = listenChatGroupConfigArray.map<FormValue>(
-    (listenConfig) => {
-      const fsConfig =
-        listenConfig.fsSendConfigArray?.map((sendConfigValue) => ({
-          appId: sendConfigValue.appId,
-          chatId: sendConfigValue.receiveId,
-          appSecret: sendConfigValue.appSecret,
-          chatName: sendConfigValue.chatName,
-        })) || [];
-
-      const tgConfig =
-        listenConfig.tgSendConfigArray?.map((tgConfigValue) => ({
-          botName: tgConfigValue.botName,
-          topicName: tgConfigValue.topicName,
-        })) || [];
-
-      return {
-        feedId: listenConfig.feedId,
-        chatName: listenConfig.chatName,
-        fsSendConfigArray: fsConfig,
-        tgSendConfigArray: tgConfig,
-      };
-    },
-  );
+  const updateData = transformToFormValue(await getConfig());
 
   event.reply('update-data', JSON.stringify(updateData));
 });
@@ -89,4 +72,13 @@ ipcMain.on('get-chat-id', (event, appId: string, appSecret: string) => {
 
 ipcMain.on('start-puppeteer', () => {
   runPuppeteer();
+});
+
+ipcMain.on('init-data', async (event) => {
+  await initConfig();
+  const config = await getConfig();
+
+  const updateData = transformToFormValue(config);
+
+  event.reply('init-data', JSON.stringify(updateData));
 });
