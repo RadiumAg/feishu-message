@@ -40,7 +40,7 @@ const initConfig = async () => {
  * @param {GlobalConfig} config
  * @return {*}  {FormValue}
  */
-const transformToFormValue = (config: GlobalConfig): FormValue => {
+const transformToFormValue = (config: GlobalConfig): FormValue[] => {
   const formValue = config.listenChatGroupConfigArray.map<FormValue>(
     (listenConfig) => {
       const fsConfig =
@@ -69,5 +69,5 @@ const transformToFormValue = (config: GlobalConfig): FormValue => {
   return formValue;
 };
 
-export { setConfig, globalConfig, getConfig, initConfig, transformToFormValue };
+export { setConfig, getConfig, initConfig, transformToFormValue };
 export type { GlobalConfig };

@@ -36,11 +36,8 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
 
   const handleChange = (record: FormValue) => {
     setRightFsTableData(record.fsSendConfigArray);
-    console.log(record);
     setRightTgTableData(record.tgSendConfigArray);
   };
-
-  console.log(rightTgTableData);
 
   const handleOpenPuppeteer = () => {
     window.electron.ipcRenderer.sendMessage('start-puppeteer');
@@ -64,13 +61,11 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
 
   useMount(() => {
     window.electron.ipcRenderer.on('update-data', (data: string) => {
-      console.log(data);
       const formData = JSON.parse(data) as FormValue[];
       setLeftTableData(formData);
     });
 
     window.electron.ipcRenderer.once('init-data', (data: string) => {
-      console.log('initData', data);
       const formData = JSON.parse(data) as FormValue[];
       setLeftTableData(formData);
     });
@@ -83,7 +78,9 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
       <div className={Styles.operateArea}>
         <Button
           type="primary"
-          onClick={toggleDialog}
+          onClick={() => {
+            toggleDialog();
+          }}
           icon={<PlusCircleOutlined />}
         />
 
@@ -106,8 +103,7 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
             onRow={(record) => ({
               onClick: () => {
                 setSelectKeys((value) => {
-                  if (value.length > 0) {
-                    handleChange([]);
+                  if (value[0] === record.feedId) {
                     return [];
                   }
 
@@ -131,7 +127,16 @@ const FSMessage: React.FC<FSMessageProps> = function FSMessage() {
 
             <Table.Column
               key="chatName"
-              render={() => <Button type="text">编辑</Button>}
+              render={(record) => (
+                <Button
+                  type="text"
+                  onClick={() => {
+                    toggleDialog(record);
+                  }}
+                >
+                  编辑
+                </Button>
+              )}
             />
           </Table>
         </Card>

@@ -3,9 +3,9 @@
 import puppeteer, { Page } from 'puppeteer';
 import log from 'electron-log';
 import { ImageMessage, RichDocMessage, TextMessage } from './type';
-import { globalConfig } from './config';
 import { createBase64ToFile } from './file';
 import { sendMessage } from '../api/tg-api';
+import { getConfig } from './config';
 
 const listenMessageEventName = 'listenMessage';
 
@@ -297,7 +297,7 @@ const evaluateListenMessaggee = async (
 
 // eslint-disable-next-line no-undef
 const runPuppeteer = async () => {
-  const { listenChatGroupConfigArray } = globalConfig;
+  const { listenChatGroupConfigArray } = await getConfig();
   const browser = await puppeteer.launch({
     headless: false,
     devtools: true,

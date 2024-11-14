@@ -20,6 +20,7 @@ type Config = {
 
 const fsConfigFormListName = 'fsSendConfigArray';
 const tgConfigFormListName = 'tgSendConfigArray';
+type FormType = 'create' | 'edit';
 
 enum ConfigList {
   '飞书' = '飞书',
@@ -28,6 +29,7 @@ enum ConfigList {
 
 const useAddDialog = (config: Config) => {
   const [form] = Form.useForm();
+  const formType = React.useRef<FormType>();
   const [showConfig, setShowConfig] = React.useState<ConfigList>(
     ConfigList.飞书,
   );
@@ -55,12 +57,8 @@ const useAddDialog = (config: Config) => {
     }
   };
 
-  useMount(() => {
-    form.setFieldValue('feedId', '7433435421348003868');
-  });
-
   const handleGetChatId = (
-    sendValue: FormValue['sendConfigArray'][number],
+    sendValue: FormValue['fsSendConfigArray'][number],
     name: [number, string] | undefined,
     isSendConfig = false,
   ) => {
@@ -285,7 +283,9 @@ const useAddDialog = (config: Config) => {
 
   return [
     element,
-    () => {
+    (formData?: FormValue) => {
+      formType.current = formData ? 'edit' : 'create';
+      form.setFieldsValue(formData);
       setIsModalOpen(!isModalOpen);
     },
   ] as const;
