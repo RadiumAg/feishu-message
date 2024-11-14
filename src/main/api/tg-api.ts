@@ -16,7 +16,7 @@ const sendMessage = (data: SendMessageData) => {
     .post<void>('/send_message', data)
     .then((res) => res.data)
     .catch((e) => {
-      ElectronLog.log(e);
+      ElectronLog.log('tg sendmessage error', JSON.stringify(e));
       console.error(e);
     });
 };
