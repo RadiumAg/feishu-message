@@ -7,9 +7,9 @@ import { createBase64ToFile } from './file';
 import { sendMessage } from '../api/tg-api';
 import { getConfig } from './config';
 
-const listenMessageEventName = 'listenMessage';
-
 type MessageType = 'text-only' | 'rich-message' | 'image-only';
+
+const listenMessageEventName = 'listenMessage';
 
 const getImageKey = async (url: string, page: Page) => {
   try {
