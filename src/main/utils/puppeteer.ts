@@ -199,6 +199,13 @@ const evaluateListenMessaggee = async (
         const messageWrapper = addNode as HTMLElement;
 
         if (messageWrapper.classList.contains('messageList-row-wrapper')) {
+          if (messageListElement) {
+            const scrollElement = messageListElement.querySelector('.scroller');
+            if (scrollElement == null) return;
+
+            scrollElement.scrollTop = scrollElement.scrollHeight;
+          }
+
           const richDocElement = messageWrapper.querySelector(
             '.richTextContainer > *',
           );
@@ -331,7 +338,7 @@ const runPuppeteer = async () => {
     // devtools: true,
     defaultViewport: null,
     args: [
-      '--remote-debugging-port=9222',
+      // '--remote-debugging-port=9222',
       '--disable-gpu',
       '--no-sandbox',
       '--disable-dev-shm-usage',
@@ -342,7 +349,9 @@ const runPuppeteer = async () => {
   for (const config of listenChatGroupConfigArray) {
     try {
       const page = await browser.newPage();
-      await page.goto('https://ezeb4r28vm.feishu.cn/next/messenger');
+      await page.goto('https://ezeb4r28vm.feishu.cn/next/messenger', {
+        timeout: 3000000,
+      });
 
       await goToGroup(page, config);
       await evaluateListenMessaggee(page, config, browser);
