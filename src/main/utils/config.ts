@@ -1,7 +1,7 @@
 import ElectronLog from 'electron-log';
 import fs from 'fs/promises';
 import path from 'path';
-import { FormValue } from '../../utils/type';
+import { FormValue } from '../../renderer/utils/type';
 
 const configPath = path.join(__dirname, 'global.config.json');
 

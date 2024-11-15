@@ -13,8 +13,8 @@ import {
 } from 'antd';
 import { useMount } from 'ahooks';
 import Styles from './index.module.scss';
-import { FormValue } from '../../../../../utils/type';
-import { generatorId } from '../../../../../utils/value';
+import { FormValue } from '../../../../utils/type';
+import { generatorId } from '../../../../utils/value';
 
 type FormType = 'create' | 'edit';
 type Config = {
@@ -55,7 +55,6 @@ const useAddDialog = (config: Config) => {
       if (formType.current === 'create') formValue.id = generatorId();
       afterClose?.(formValue, formType.current);
       form.resetFields();
-      setShowConfig(ConfigList.飞书);
       console.log('form.getFieldsValue()', formValue);
     } catch (e) {
       console.error(e);
@@ -76,6 +75,10 @@ const useAddDialog = (config: Config) => {
       sendValue.appId,
       sendValue.appSecret,
     );
+  };
+
+  const handleAfterClose = () => {
+    setShowConfig(ConfigList.飞书);
   };
 
   useMount(() => {
@@ -100,6 +103,7 @@ const useAddDialog = (config: Config) => {
 
   const element = (
     <Modal
+      afterClose={handleAfterClose}
       destroyOnClose
       open={isModalOpen}
       onOk={handleOk}
@@ -114,25 +118,25 @@ const useAddDialog = (config: Config) => {
           <Form.Item name="id" noStyle />
 
           <Form.Item
-            name="标签名称"
+            name="chatName"
             rules={[{ required: true }]}
-            label="tagFeedId"
+            label="群聊名称"
           >
             <Input />
           </Form.Item>
 
           <Form.Item
-            name="群聊名称"
+            name="tagFeedId"
             rules={[{ required: true }]}
-            label="chatName"
+            label="群聊标签Id"
           >
             <Input />
           </Form.Item>
 
           <Form.Item
-            name="群聊卡片Id"
+            name="feedId"
             rules={[{ required: true }]}
-            label="feedId"
+            label="群聊卡片Id"
           >
             <Input />
           </Form.Item>

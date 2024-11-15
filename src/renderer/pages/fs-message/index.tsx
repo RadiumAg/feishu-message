@@ -4,7 +4,7 @@ import { PlusCircleOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useMount } from 'ahooks';
 import Styles from './index.module.scss';
 import useAddDialog from './hooks/add-dialog';
-import { FormValue } from '../../../utils/type';
+import { FormValue } from '../../utils/type';
 
 type FSMessageProps = {};
 

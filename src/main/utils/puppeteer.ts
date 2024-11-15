@@ -158,7 +158,6 @@ const evaluateListenMessaggee = async (
             allImagSourcePromise.push(
               new Promise((resolve) => {
                 element.onload = () => {
-                  console.log('img src', element?.src);
                   imgRecord.push({
                     tag: 'img',
                     image_key: element?.src,

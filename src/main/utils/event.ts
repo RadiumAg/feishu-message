@@ -7,7 +7,7 @@ import {
   setConfig,
   transformToFormValue,
 } from './config';
-import { FormValue } from '../../utils/type';
+import { FormValue } from '../../renderer/utils/type';
 import { runPuppeteer } from './puppeteer';
 
 ipcMain.on('set-config', async (event, globalConfig: string) => {
