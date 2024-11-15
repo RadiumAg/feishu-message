@@ -188,6 +188,14 @@ const evaluateListenMessaggee = async (
           addedNodes.push(node);
         });
       });
+
+      if (messageListElement) {
+        const scrollElement = messageListElement.querySelector('.scroller');
+        if (scrollElement == null) return;
+
+        scrollElement.scrollTop = scrollElement.scrollHeight;
+      }
+
       console.log('addNodes', addedNodes);
 
       // eslint-disable-next-line no-restricted-syntax
@@ -199,13 +207,6 @@ const evaluateListenMessaggee = async (
         const messageWrapper = addNode as HTMLElement;
 
         if (messageWrapper.classList.contains('messageList-row-wrapper')) {
-          if (messageListElement) {
-            const scrollElement = messageListElement.querySelector('.scroller');
-            if (scrollElement == null) return;
-
-            scrollElement.scrollTop = scrollElement.scrollHeight;
-          }
-
           const richDocElement = messageWrapper.querySelector(
             '.richTextContainer > *',
           );
