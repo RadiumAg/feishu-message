@@ -319,6 +319,9 @@ const goToGroup = async (page: Page, config: ListenChatGroupConfig) => {
   });
 
   await page.locator(`.tag-filter-item-${config.tagFeedId}`).click();
+  await page
+    .locator(`[data-feed-id="${config.feedId}"] .a11y_feed_card_item`)
+    .click();
 };
 
 const runPuppeteer = async () => {
@@ -340,10 +343,6 @@ const runPuppeteer = async () => {
     try {
       const page = await browser.newPage();
       await page.goto('https://ezeb4r28vm.feishu.cn/next/messenger');
-
-      await page
-        .locator(`[data-feed-id="${config.feedId}"] .a11y_feed_card_item`)
-        .click();
 
       await goToGroup(page, config);
       await evaluateListenMessaggee(page, config, browser);
