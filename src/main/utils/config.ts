@@ -55,10 +55,12 @@ const transformToFormValue = (config: GlobalConfig): FormValue[] => {
         listenConfig.tgSendConfigArray?.map((tgConfigValue) => ({
           botName: tgConfigValue.botName,
           topicName: tgConfigValue.topicName,
+          isSendImg: tgConfigValue.isSendImg,
         })) || [];
 
       return {
         id: listenConfig.id,
+        tagFeedId: listenConfig.tagFeedId,
         feedId: listenConfig.feedId,
         chatName: listenConfig.chatName,
         fsSendConfigArray: fsConfig,

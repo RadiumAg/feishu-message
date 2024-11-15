@@ -296,7 +296,32 @@ const evaluateListenMessaggee = async (
   });
 };
 
+/**
+ * 跳转到群组
+ *
+ * @param {Page} page
+ */
 // eslint-disable-next-line no-undef
+const goToGroup = async (page: Page, config: ListenChatGroupConfig) => {
+  await page.waitForSelector('.list_items');
+
+  await page.evaluateHandle(() => {
+    const tagItem = document.querySelector('.list_items');
+    const children = tagItem?.children;
+
+    if (children == null) return;
+
+    for (let index = 0; index < children?.length; index += 1) {
+      const tagElement = children.item(index);
+      if (tagElement?.textContent === '标签') {
+        (tagElement as HTMLElement).click();
+      }
+    }
+  });
+
+  await page.locator(`.tag-filter-item-${config.tagFeedId}`).click();
+};
+
 const runPuppeteer = async () => {
   const { listenChatGroupConfigArray } = await getConfig();
   const browser = await puppeteer.launch({
@@ -317,30 +342,11 @@ const runPuppeteer = async () => {
       const page = await browser.newPage();
       await page.goto('https://ezeb4r28vm.feishu.cn/next/messenger');
 
-      await page.waitForSelector('.list_items');
-
-      await page.evaluateHandle(() => {
-        const tagItem = document.querySelector('.list_items');
-        const children = tagItem?.children;
-
-        if (children == null) return;
-
-        for (let index = 0; index < children?.length; index += 1) {
-          const tagElement = children.item(index);
-          if (tagElement?.textContent === '标签') {
-            (tagElement as HTMLElement).click();
-          }
-        }
-
-        return;
-      });
-
-      await page.locator('.tag-filter-item-7432720777247621124').click();
-
       await page
         .locator(`[data-feed-id="${config.feedId}"] .a11y_feed_card_item`)
         .click();
 
+      await goToGroup(page, config);
       await evaluateListenMessaggee(page, config, browser);
     } catch (error) {
       ElectronLog.error('openPageError', JSON.stringify(error));

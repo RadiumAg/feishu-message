@@ -10,10 +10,12 @@ type FSSendConfig = {
 type TGSendConfigArray = {
   botName: string;
   topicName: string;
+  isSendImg: boolean;
 };
 
 type ListenChatGroupConfig = {
   id: string;
+  tagFeedId: string;
   feedId: string;
   chatName: string;
   userName?: string;

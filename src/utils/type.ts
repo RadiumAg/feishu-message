@@ -1,6 +1,7 @@
 type FormValue = {
   id: string;
   feedId: string;
+  tagFeedId: string;
   chatName: string;
   fsSendConfigArray: {
     appId: string;
@@ -11,6 +12,7 @@ type FormValue = {
   tgSendConfigArray: {
     botName: string;
     topicName: string;
+    isSendImg: boolean;
   }[];
 };
 

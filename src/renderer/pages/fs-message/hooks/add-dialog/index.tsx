@@ -9,6 +9,7 @@ import {
   Modal,
   Segmented,
   Spin,
+  Switch,
 } from 'antd';
 import { useMount } from 'ahooks';
 import Styles from './index.module.scss';
@@ -113,14 +114,26 @@ const useAddDialog = (config: Config) => {
           <Form.Item name="id" noStyle />
 
           <Form.Item
-            name="chatName"
+            name="标签名称"
+            rules={[{ required: true }]}
+            label="tagFeedId"
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            name="群聊名称"
             rules={[{ required: true }]}
             label="chatName"
           >
             <Input />
           </Form.Item>
 
-          <Form.Item name="feedId" rules={[{ required: true }]} label="feedId">
+          <Form.Item
+            name="群聊卡片Id"
+            rules={[{ required: true }]}
+            label="feedId"
+          >
             <Input />
           </Form.Item>
 
@@ -269,6 +282,14 @@ const useAddDialog = (config: Config) => {
                           >
                             <Input />
                           </Form.Item>
+
+                          <Form.Item
+                            rules={[{ required: true }]}
+                            label="是否发送图片"
+                            name={[field.name, 'isSendImg']}
+                          >
+                            <Switch />
+                          </Form.Item>
                         </Card>
                       );
                     })}
@@ -291,8 +312,8 @@ const useAddDialog = (config: Config) => {
     element,
     (formData?: FormValue) => {
       formType.current = formData ? 'edit' : 'create';
-      console.log(formData);
       if (formData) form.setFieldsValue(formData);
+
       setIsModalOpen(!isModalOpen);
     },
   ] as const;

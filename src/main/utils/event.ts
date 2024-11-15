@@ -6,9 +6,9 @@ import {
   initConfig,
   setConfig,
   transformToFormValue,
-} from './utils/config';
-import { FormValue } from '../utils/type';
-import { runPuppeteer } from './utils/puppeteer';
+} from './config';
+import { FormValue } from '../../utils/type';
+import { runPuppeteer } from './puppeteer';
 
 ipcMain.on('set-config', async (event, globalConfig: string) => {
   const config = JSON.parse(globalConfig) as FormValue[];
@@ -20,6 +20,7 @@ ipcMain.on('set-config', async (event, globalConfig: string) => {
       id: configValue.id,
       chatName: configValue.chatName,
       feedId: configValue.feedId,
+      tagFeedId: configValue.tagFeedId,
       fsSendConfigArray: configValue.fsSendConfigArray?.map((sendConfig) => {
         return {
           appId: sendConfig.appId,
@@ -34,6 +35,7 @@ ipcMain.on('set-config', async (event, globalConfig: string) => {
         return {
           botName: sendConfig.botName,
           topicName: sendConfig.topicName,
+          isSendImg: sendConfig.isSendImg,
         };
       }),
     };
